@@ -27,7 +27,7 @@ export function KpiGrid({ stats, revenue, locationCount, locationLabel }: KpiGri
 
   if (stats.status === 'error' || revenue.status === 'error') {
     return (
-      <div className="rounded-card border border-border bg-surface shadow-card">
+      <div className="glass rounded-card">
         <ErrorState onRetry={() => { stats.retry(); revenue.retry() }} />
       </div>
     )

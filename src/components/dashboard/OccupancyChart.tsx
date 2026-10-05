@@ -260,7 +260,7 @@ export const OccupancyChart = memo(function OccupancyChart({ series, fmt }: Occu
 
         {geometry && activePoint && active !== null && (
           <div
-            className="pointer-events-none absolute top-2 z-10 w-44 rounded-xl border border-border bg-surface-raised px-3 py-2.5 text-xs shadow-pop"
+            className="pointer-events-none absolute top-2 z-10 w-44 glass-strong rounded-xl px-3 py-2.5 text-xs shadow-pop"
             style={{ left: tooltipLeft(geometry.occupied[active][0], width) }}
           >
             <p className="mb-1.5 font-semibold text-text">{labelFor(activePoint.timestamp)}</p>

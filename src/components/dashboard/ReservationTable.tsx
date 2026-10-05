@@ -1,21 +1,16 @@
 import { ArrowRight, CalendarClock } from 'lucide-react'
 import { useState } from 'react'
-import { Badge, type BadgeTone } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { EmptyState, ErrorState, LoadingState, Skeleton } from '@/components/ui/States'
 import { ROUTES } from '@/config/navigation'
+import { reservationTone } from '@/config/reservations'
 import type { AsyncResult } from '@/hooks/useAsync'
 import { useFormat, type Formatters } from '@/hooks/useFormat'
 import { useI18n } from '@/i18n'
-import type { Reservation, ReservationStatus } from '@/types'
+import type { Reservation } from '@/types'
 
-const statusTone: Record<ReservationStatus, BadgeTone> = {
-  confirmed: 'success',
-  pending: 'warning',
-  checked_in: 'info',
-  cancelled: 'neutral',
-}
 
 interface ReservationTableProps {
   reservations: AsyncResult<Reservation[]>
@@ -100,7 +95,7 @@ export function ReservationTable({ reservations, className }: ReservationTablePr
                     <td className="border-b border-border px-2 py-3 group-last:border-0"><DateCell iso={r.checkIn} fmt={fmt} now={now} /></td>
                     <td className="border-b border-border px-2 py-3 group-last:border-0"><DateCell iso={r.checkOut} fmt={fmt} now={now} /></td>
                     <td className="border-b border-border px-2 py-3 group-last:border-0">
-                      <Badge tone={statusTone[r.status]}>{t(`reservationStatus.${r.status}`)}</Badge>
+                      <Badge tone={reservationTone[r.status]}>{t(`reservationStatus.${r.status}`)}</Badge>
                     </td>
                   </tr>
                 ))}
@@ -111,13 +106,13 @@ export function ReservationTable({ reservations, className }: ReservationTablePr
           {/* Mobile: stacked cards (no horizontal scroll) */}
           <ul className="space-y-2.5 md:hidden">
             {reservations.data.map((r) => (
-              <li key={r.id} className="rounded-2xl border border-border bg-surface-raised p-3.5">
+              <li key={r.id} className="rounded-2xl border border-glass-border bg-surface-hover p-3.5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="tabular text-xs font-semibold text-text-muted">#{r.code}</p>
                     <p className="truncate text-sm font-semibold text-text">{r.customer.name}</p>
                   </div>
-                  <Badge tone={statusTone[r.status]}>{t(`reservationStatus.${r.status}`)}</Badge>
+                  <Badge tone={reservationTone[r.status]}>{t(`reservationStatus.${r.status}`)}</Badge>
                 </div>
                 <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
                   <div>

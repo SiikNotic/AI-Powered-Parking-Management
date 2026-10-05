@@ -1,4 +1,5 @@
 import { MapPinPlus } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { AlertCard } from '@/components/dashboard/AlertCard'
 import { KpiGrid } from '@/components/dashboard/KpiGrid'
 import { OccupancySection } from '@/components/dashboard/OccupancySection'
@@ -18,13 +19,14 @@ export function DashboardPage() {
   const { t } = useI18n()
   const { selectedLocation, locations, activeLocation } = useSession()
   const data = useDashboardData(selectedLocation)
+  const navigate = useNavigate()
   const locationList = locations.data ?? []
   const scoped = activeLocation ? [activeLocation] : locationList
 
   if (locations.status === 'error') {
     return (
       <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
-        <ErrorState onRetry={locations.retry} className="rounded-card border border-border bg-surface" />
+        <ErrorState onRetry={locations.retry} className="glass rounded-card" />
       </div>
     )
   }
@@ -36,9 +38,9 @@ export function DashboardPage() {
           icon={MapPinPlus}
           title={t('states.noLocationsTitle')}
           description={t('states.noLocationsDescription')}
-          className="rounded-card border border-border bg-surface py-20"
+          className="glass rounded-card py-20"
           action={
-            <LinkButton to={ROUTES.parkingLocations} variant="signature">
+            <LinkButton to={`${ROUTES.parkingLocations}?new=1`} variant="signature">
               {t('dashboard.quickActions.addLocation')}
             </LinkButton>
           }
@@ -63,7 +65,10 @@ export function DashboardPage() {
         <OccupancySection location={selectedLocation} className="order-2 min-w-0 xl:order-none xl:col-span-8" />
         <AlertCard alerts={data.alerts} locations={locationList} className="order-1 min-w-0 xl:order-none xl:col-span-4" />
 
-        <ParkingStatus spaces={data.spaces} locations={scoped} className="order-3 min-w-0 xl:order-none xl:col-span-8" />
+        <ParkingStatus
+          spaces={data.spaces}
+          locations={scoped}
+          onSelectSpace={(space) => navigate(`${ROUTES.parkingSpaces}?space=${space.id}`)} className="order-3 min-w-0 xl:order-none xl:col-span-8" />
         <RecentActivity
           activity={data.activity}
           locations={locationList}

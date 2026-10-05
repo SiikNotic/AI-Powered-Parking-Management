@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { BREAKPOINTS, useMediaQuery } from '@/hooks/useMediaQuery'
 import { useI18n } from '@/i18n'
@@ -93,7 +93,7 @@ export function DashboardLayout() {
           compact ? 'w-[5.5rem]' : 'w-[17rem]',
         )}
       >
-        <div className="h-full rounded-[1.5rem] border border-border bg-surface px-3 pb-3 shadow-card">
+        <div className="glass h-full rounded-[1.5rem] px-3 pb-3">
           <Sidebar compact={compact} onToggleCollapse={isDesktop ? toggleCollapsed : undefined} />
         </div>
       </aside>
@@ -110,7 +110,7 @@ export function DashboardLayout() {
           />
           <div
             ref={drawerRef}
-            className="absolute inset-y-0 left-0 w-[min(18rem,85vw)] bg-surface px-3 pb-3 shadow-pop animate-fade-in"
+            className="glass-strong absolute inset-y-0 left-0 w-[min(18rem,85vw)] rounded-r-[1.5rem] px-3 pb-3 animate-fade-in"
           >
             <Sidebar compact={false} inDrawer onClose={closeDrawer} />
           </div>
@@ -125,7 +125,15 @@ export function DashboardLayout() {
       >
         <Topbar onOpenMenu={() => setDrawerOpen(true)} />
         <main id="main-content" tabIndex={-1} className="flex-1 overflow-x-clip focus:outline-none">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8" role="status" aria-busy="true">
+                <div className="skeleton h-64 rounded-card" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

@@ -30,7 +30,7 @@ export function LocationSelector({ className }: { className?: string }) {
           {...props}
           type="button"
           aria-label={`${t('location.label')}: ${label}`}
-          className="flex h-10 w-full items-center gap-2 rounded-full border border-border bg-surface-raised pl-3 pr-2.5 text-sm font-medium text-text shadow-sm transition-colors hover:border-border-strong md:w-auto md:max-w-64"
+          className="flex h-10 w-full items-center gap-2 glass rounded-full pl-3 pr-2.5 text-sm font-medium text-text shadow-sm transition-colors hover:border-border-strong md:w-auto md:max-w-64"
         >
           <TriggerIcon aria-hidden className="size-4 shrink-0 text-text-muted" />
           <span className="min-w-0 flex-1 truncate text-left">{label}</span>

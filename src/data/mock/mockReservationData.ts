@@ -4,7 +4,7 @@
  * Every reserved space in `mockParkingData` gets one upcoming reservation.
  */
 import type { Customer, Reservation, ReservationStatus, VehicleType } from '@/types'
-import { hoursFromNow } from './demoUtils'
+import { createRandom, hoursFromNow } from './demoUtils'
 import { mockSpaces } from './mockParkingData'
 
 export const mockCustomers: Customer[] = [
@@ -57,3 +57,52 @@ export const mockReservations: Reservation[] = mockSpaces
       currency: 'USD' as const,
     }
   })
+
+/** Vehicles currently parked on a reservation (about half of the occupied spaces). */
+export const mockCurrentStays: Reservation[] = mockSpaces
+  .filter((space) => space.status === 'occupied')
+  .filter((_, i) => i % 2 === 0)
+  .map((space, index) => {
+    const n = 1100 + index
+    const daily = space.priceUnit !== 'night'
+    return {
+      id: `res_${n}`,
+      code: `SP-${n}`,
+      locationId: space.locationId,
+      spaceId: space.id,
+      spaceNumber: space.number,
+      customer: mockCustomers[(index + 3) % mockCustomers.length],
+      vehicleType: space.vehicleTypes[index % space.vehicleTypes.length],
+      checkIn: hoursFromNow(-(2 + (index % 9))),
+      checkOut: hoursFromNow(daily ? 3 + (index % 5) : 8 + (index % 12)),
+      status: 'checked_in' as const,
+      total: space.price,
+      currency: 'USD' as const,
+    }
+  })
+
+/** Completed stays over the last 30 days, so customers have a history. */
+export const mockPastReservations: Reservation[] = (() => {
+  const random = createRandom(77)
+  return Array.from({ length: 48 }, (_, index) => {
+    const space = mockSpaces[Math.floor(random() * mockSpaces.length)]
+    const n = 900 + index
+    const startHoursAgo = 24 + Math.floor(random() * 29 * 24)
+    const daily = space.priceUnit !== 'night'
+    const nights = daily ? 1 : 1 + Math.floor(random() * 3)
+    return {
+      id: `res_${n}`,
+      code: `SP-${n}`,
+      locationId: space.locationId,
+      spaceId: space.id,
+      spaceNumber: space.number,
+      customer: mockCustomers[Math.floor(random() * mockCustomers.length)],
+      vehicleType: space.vehicleTypes[index % space.vehicleTypes.length],
+      checkIn: hoursFromNow(-startHoursAgo),
+      checkOut: hoursFromNow(-startHoursAgo + (daily ? 9 : 14 + (nights - 1) * 24)),
+      status: (index % 11 === 0 ? 'cancelled' : 'completed') as Reservation['status'],
+      total: space.price * nights,
+      currency: 'USD' as const,
+    }
+  })
+})()

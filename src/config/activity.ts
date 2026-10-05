@@ -1,5 +1,10 @@
 import {
+  Building2,
   CalendarCheck2,
+  Cctv,
+  CameraOff,
+  UserPlus,
+  Wrench,
   CalendarPlus,
   CalendarX2,
   CircleCheck,
@@ -21,6 +26,11 @@ export const activityVisuals: Record<ActivityType, { icon: LucideIcon; tone: Act
   check_in: { icon: LogIn, tone: 'neutral' },
   check_out: { icon: LogOut, tone: 'neutral' },
   payment_received: { icon: CircleDollarSign, tone: 'success' },
+  location_created: { icon: Building2, tone: 'info' },
+  customer_created: { icon: UserPlus, tone: 'neutral' },
+  space_maintenance: { icon: Wrench, tone: 'warning' },
+  camera_offline: { icon: CameraOff, tone: 'danger' },
+  camera_online: { icon: Cctv, tone: 'success' },
 }
 
 export const activityToneBadge: Record<ActivityTone, BadgeTone> = {

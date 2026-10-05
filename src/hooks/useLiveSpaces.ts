@@ -8,7 +8,7 @@ import { useAsync, type AsyncResult } from './useAsync'
  * `parkingService.subscribeToSpaces` (Supabase Realtime later; a no-op with demo data).
  */
 export function useLiveSpaces(location: LocationFilter): AsyncResult<ParkingSpace[]> {
-  const initial = useAsync(() => parkingService.getSpaces(location), [location])
+  const initial = useAsync(() => parkingService.getSpaces(location), [location], ['locations'])
   const [updates, setUpdates] = useState<{ location: LocationFilter; byId: Record<string, ParkingSpace> }>({
     location,
     byId: {},

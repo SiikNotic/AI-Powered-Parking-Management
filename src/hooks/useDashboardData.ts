@@ -9,12 +9,12 @@ import { useLiveSpaces } from './useLiveSpaces'
  * blanks the whole page.
  */
 export function useDashboardData(location: LocationFilter) {
-  const stats = useAsync(() => parkingService.getStats(location), [location])
+  const stats = useAsync(() => parkingService.getStats(location), [location], ['spaces', 'locations'])
   const spaces = useLiveSpaces(location)
-  const revenue = useAsync(() => analyticsService.getRevenue(location), [location])
-  const reservations = useAsync(() => reservationService.getUpcoming(location, 6), [location])
-  const activity = useAsync(() => activityService.getRecentActivity(location, 7), [location])
-  const alerts = useAsync(() => activityService.getAlerts(location), [location])
+  const revenue = useAsync(() => analyticsService.getRevenue(location), [location], ['spaces', 'locations'])
+  const reservations = useAsync(() => reservationService.getUpcoming(location, 6), [location], ['reservations', 'customers'])
+  const activity = useAsync(() => activityService.getRecentActivity(location, 7), [location], ['activity'])
+  const alerts = useAsync(() => activityService.getAlerts(location), [location], ['alerts', 'cameras', 'spaces', 'settings'])
 
   return { stats, spaces, revenue, reservations, activity, alerts }
 }

@@ -7,15 +7,23 @@
 :root {
   color-scheme: light;
 
-  --bg: #ecebf1;
-  --bg-glow-1: rgba(167, 152, 236, 0.22);
-  --bg-glow-2: rgba(255, 176, 140, 0.14);
-  --surface: #f8f8fb;
-  --surface-raised: #ffffff;
-  --surface-sunken: #e8e7ee;
-  --surface-hover: #f0eff5;
-  --border: rgba(24, 20, 48, 0.07);
-  --border-strong: rgba(24, 20, 48, 0.14);
+  /* Glass: translucent surfaces over a soft multi-colour backdrop */
+  --bg: #e6e5f1;
+  --bg-glow-1: rgba(132, 112, 255, 0.42);
+  --bg-glow-2: rgba(255, 158, 112, 0.34);
+  --bg-glow-3: rgba(86, 178, 255, 0.32);
+  --bg-glow-4: rgba(236, 92, 160, 0.2);
+  --surface: rgba(255, 255, 255, 0.56);
+  --surface-raised: rgba(255, 255, 255, 0.84);
+  --surface-sunken: rgba(24, 20, 48, 0.045);
+  --surface-hover: rgba(255, 255, 255, 0.62);
+  --surface-solid: #f6f5fb;
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --glass-blur: 22px;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6e7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --border: rgba(24, 20, 48, 0.08);
+  --border-strong: rgba(24, 20, 48, 0.16);
 
   --text: #16151c;
   --text-secondary: #55545f;
@@ -48,8 +56,8 @@
   --status-disabled-soft: rgba(142, 141, 153, 0.16);
   --status-disabled-ink: #5d5c68;
 
-  --shadow-card: 0 1px 2px rgba(24, 20, 48, 0.04), 0 8px 24px -12px rgba(24, 20, 48, 0.1);
-  --shadow-pop: 0 12px 40px -12px rgba(24, 20, 48, 0.28), 0 2px 6px rgba(24, 20, 48, 0.06);
+  --shadow-card: 0 1px 2px rgba(24, 20, 48, 0.04), 0 12px 32px -14px rgba(60, 40, 140, 0.22);
+  --shadow-pop: 0 18px 48px -14px rgba(40, 24, 110, 0.35), 0 2px 6px rgba(24, 20, 48, 0.06);
 
   --radius-card: 22px;
 }
@@ -57,15 +65,20 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: #0d0d12;
-  --bg-glow-1: rgba(120, 102, 230, 0.12);
-  --bg-glow-2: rgba(255, 140, 100, 0.05);
-  --surface: #15151c;
-  --surface-raised: #1c1c25;
-  --surface-sunken: #101016;
-  --surface-hover: #20202a;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --bg: #0a0a12;
+  --bg-glow-1: rgba(112, 92, 255, 0.3);
+  --bg-glow-2: rgba(255, 120, 90, 0.12);
+  --bg-glow-3: rgba(56, 150, 255, 0.2);
+  --bg-glow-4: rgba(236, 72, 153, 0.14);
+  --surface: rgba(28, 28, 42, 0.56);
+  --surface-raised: rgba(32, 32, 48, 0.88);
+  --surface-sunken: rgba(255, 255, 255, 0.045);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-solid: #16161f;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
   --text: #f2f1f7;
   --text-secondary: #b0afbd;
@@ -95,7 +108,7 @@
   --status-disabled-soft: rgba(142, 141, 153, 0.16);
   --status-disabled-ink: #a9a8b4;
 
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 12px 32px -14px rgba(0, 0, 0, 0.7);
   --shadow-pop: 0 16px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
@@ -108,6 +121,8 @@
   --color-surface-raised: var(--surface-raised);
   --color-surface-sunken: var(--surface-sunken);
   --color-surface-hover: var(--surface-hover);
+  --color-surface-solid: var(--surface-solid);
+  --color-glass-border: var(--glass-border);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-text: var(--text);
@@ -154,13 +169,24 @@
     margin: 0;
     min-height: 100dvh;
     background-color: var(--bg);
-    background-image:
-      radial-gradient(60rem 40rem at 100% -10%, var(--bg-glow-1), transparent 60%),
-      radial-gradient(40rem 30rem at -10% 110%, var(--bg-glow-2), transparent 60%);
-    background-attachment: fixed;
     color: var(--text);
     font-family: var(--font-sans);
     font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Colour fields behind the glass. A fixed layer (not background-attachment) so it stays smooth on phones. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(42rem 32rem at 92% 4%, var(--bg-glow-1), transparent 62%),
+      radial-gradient(36rem 30rem at 4% 96%, var(--bg-glow-2), transparent 62%),
+      radial-gradient(34rem 28rem at 8% 18%, var(--bg-glow-3), transparent 60%),
+      radial-gradient(30rem 26rem at 78% 88%, var(--bg-glow-4), transparent 60%);
   }
 
   :focus-visible {
@@ -175,6 +201,31 @@
 }
 
 @layer utilities {
+  /* Frosted panel: cards, sidebar, topbar */
+  .glass {
+    background-color: var(--surface);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-highlight);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+  }
+
+  /* Denser glass for floating layers: menus, dialogs, toasts */
+  .glass-strong {
+    background-color: var(--surface-raised);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-pop), inset 0 1px 0 var(--glass-highlight);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass,
+    .glass-strong {
+      background-color: var(--surface-solid);
+    }
+  }
+
   .tabular {
     font-variant-numeric: tabular-nums;
   }
