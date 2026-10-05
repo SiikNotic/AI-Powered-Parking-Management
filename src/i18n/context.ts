@@ -24,7 +24,7 @@ export interface I18nContextValue {
   t: (key: TranslationKey, params?: TranslationParams) => string
 }
 
-export const LOCALE_STORAGE_KEY = 'sky-parking.locale'
+export const LOCALE_STORAGE_KEY = 'mushroom-farm.locale'
 
 export function detectLocale(): Locale {
   try {

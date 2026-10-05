@@ -1,142 +1,153 @@
 /**
- * Service contracts.
- *
- * The UI talks to these interfaces only. Today they are implemented with demo
- * data kept in the browser (`./mock`); a Supabase implementation can be added
- * next to it and selected in `./index.ts` without touching any component.
+ * Service contracts. The UI only talks to these interfaces; the demo
+ * implementation lives in ./demo and a Supabase implementation can replace it
+ * without touching components (see README → "Connecting Supabase").
  */
+import type { DailyFinance, ProductSales, ProfitAndLoss } from '@/domain/finance'
+import type { ExpiringLot, InventorySummary } from '@/domain/inventory'
+import type { DailyHarvest, HarvestForecast, HarvestTotals, YieldStats } from '@/domain/production'
 import type {
-  ActivityEvent,
-  Alert,
-  AppSettings,
-  Camera,
-  CameraInput,
-  CameraStatus,
-  Customer,
-  CustomerInput,
-  CustomerSummary,
-  LocationFilter,
-  LocationInput,
-  LocationSetup,
-  Manager,
-  ManagerInput,
-  OccupancyPeriod,
-  OccupancySeries,
-  ParkingLocation,
-  ParkingSpace,
-  ParkingStats,
-  Reservation,
-  ReservationInput,
-  ReservationStatus,
-  RevenueStats,
-  SpaceInput,
+  AppUser,
+  AuditEntry,
+  BatchStatus,
+  DateRange,
+  EnvironmentalReading,
+  Farm,
+  FarmAlert,
+  FarmTask,
+  GrowRoom,
+  ID,
+  MushroomSpecies,
+  Period,
+  ProductionBatch,
+  Role,
+  SaleChannel,
 } from '@/types'
 
-export type Unsubscribe = () => void
-
-/** Data areas a screen can listen to for changes. */
-export type DataTopic =
-  | 'locations'
-  | 'spaces'
-  | 'reservations'
-  | 'customers'
-  | 'cameras'
-  | 'activity'
-  | 'alerts'
-  | 'settings'
-  | 'session'
-
-/**
- * Push-based change notifications.
- * Will be backed by Supabase Realtime (`postgres_changes`). Never polling.
- */
-export interface ChangeFeed {
-  subscribe(topics: DataTopic[], onChange: () => void): Unsubscribe
-}
-
-export interface ParkingService {
-  getLocations(): Promise<ParkingLocation[]>
-  createLocation(input: LocationInput, setup?: LocationSetup): Promise<ParkingLocation>
-  updateLocation(id: string, input: LocationInput): Promise<ParkingLocation>
-  /** Also removes the location's spaces, cameras and reservations. */
-  deleteLocation(id: string): Promise<void>
-
-  getSpaces(location: LocationFilter): Promise<ParkingSpace[]>
-  createSpace(input: SpaceInput): Promise<ParkingSpace>
-  updateSpace(id: string, patch: Partial<SpaceInput>): Promise<ParkingSpace>
-  deleteSpace(id: string): Promise<void>
-
-  getStats(location: LocationFilter): Promise<ParkingStats>
-  /** Push-based updates for space status changes (Supabase Realtime later). */
-  subscribeToSpaces(location: LocationFilter, onChange: (space: ParkingSpace) => void): Unsubscribe
-}
-
-export type ReservationView = 'upcoming' | 'active' | 'past' | 'all'
-
-export interface ReservationQuery {
-  location: LocationFilter
-  view?: ReservationView
-  status?: ReservationStatus
-  search?: string
-}
-
-export interface ReservationService {
-  list(query: ReservationQuery): Promise<Reservation[]>
-  getUpcoming(location: LocationFilter, limit?: number): Promise<Reservation[]>
-  create(input: ReservationInput): Promise<Reservation>
-  confirm(id: string): Promise<Reservation>
-  checkIn(id: string): Promise<Reservation>
-  checkOut(id: string): Promise<Reservation>
-  cancel(id: string): Promise<Reservation>
-}
-
-export interface CustomerService {
-  list(search?: string): Promise<CustomerSummary[]>
-  getReservations(customerId: string): Promise<Reservation[]>
-  create(input: CustomerInput): Promise<Customer>
-  update(id: string, input: CustomerInput): Promise<Customer>
-  delete(id: string): Promise<void>
-}
-
-export interface LocationRevenue {
-  locationId: string
-  name: string
-  amount: number
-}
-
-export interface AnalyticsService {
-  getOccupancy(location: LocationFilter, period: OccupancyPeriod): Promise<OccupancySeries>
-  getRevenue(location: LocationFilter): Promise<RevenueStats>
-  getRevenueByLocation(): Promise<LocationRevenue[]>
-}
-
-export interface ActivityService {
-  getRecentActivity(location: LocationFilter, limit?: number): Promise<ActivityEvent[]>
-  getAlerts(location: LocationFilter): Promise<Alert[]>
-  /** Dismisses a stored alert. Derived alerts clear themselves when the cause is fixed. */
-  resolveAlert(id: string): Promise<void>
-}
-
-export interface CameraService {
-  list(location: LocationFilter): Promise<Camera[]>
-  create(input: CameraInput): Promise<Camera>
-  update(id: string, input: CameraInput): Promise<Camera>
-  setStatus(id: string, status: CameraStatus): Promise<Camera>
-  delete(id: string): Promise<void>
+export interface Session {
+  user: AppUser
+  /** Only the farms the user is a member of. */
+  farms: Farm[]
 }
 
 export interface AuthService {
-  getCurrentManager(): Promise<Manager>
-  updateManager(input: ManagerInput): Promise<Manager>
-  isSignedIn(): boolean
-  signIn(): Promise<void>
-  /** Ends the session. Backed by `supabase.auth.signOut()` once auth is connected. */
-  signOut(): Promise<void>
+  getSession(): Promise<Session>
+  /** Demo only: preview the dashboard as another role. */
+  setRole(role: Role): Promise<Session>
 }
 
-export interface SettingsService {
-  get(): Promise<AppSettings>
-  update(patch: Partial<AppSettings>): Promise<AppSettings>
-  /** Demo only: restores the original sample data. */
-  resetDemoData(): Promise<void>
+export interface Metric<T = number> {
+  value: T
+  previous: T
+}
+
+export interface BatchSummary extends ProductionBatch {
+  speciesName: string
+  roomName: string
+  harvestedLb: number
+  expectedLb: number
+}
+
+export interface ActivityItem extends AuditEntry {
+  userName: string
+}
+
+export interface TaskItem extends FarmTask {
+  assigneeName: string
+}
+
+export interface DashboardKpis {
+  harvestToday: Metric
+  inventoryLb: number
+  inventoryValue: number
+  openOrders: number
+  ordersInPeriod: Metric
+  revenue: Metric
+  expenses: Metric
+  netProfit: Metric
+  activeBatches: number
+  readyToHarvest: number
+  lowStockItems: number
+}
+
+export interface DashboardSnapshot {
+  farm: Farm
+  period: Period
+  range: DateRange
+  generatedAt: string
+  species: MushroomSpecies[]
+  rooms: GrowRoom[]
+  kpis: DashboardKpis
+  pnl: ProfitAndLoss
+  finance: DailyFinance[]
+  harvest: {
+    totals: HarvestTotals
+    daily: DailyHarvest[]
+    bySpecies: { speciesId: ID; lb: number }[]
+  }
+  production: {
+    pipeline: Record<BatchStatus, number>
+    yield: YieldStats
+    forecast: HarvestForecast
+    ready: BatchSummary[]
+    overdue: BatchSummary[]
+  }
+  inventory: InventorySummary & { expiring: ExpiringLot[] }
+  sales: {
+    soldLb: number
+    topProducts: ProductSales[]
+    bySpecies: { speciesId: ID; revenue: number }[]
+    byChannel: { channel: SaleChannel; revenue: number }[]
+  }
+  tasks: TaskItem[]
+  activity: ActivityItem[]
+}
+
+export interface DashboardService {
+  getSnapshot(farmId: ID, period: Period): Promise<DashboardSnapshot>
+}
+
+/**
+ * Hardware-agnostic sensor source. Any vendor (or a gateway writing to the
+ * `environmental_readings` table) can implement it.
+ */
+export interface SensorProvider {
+  /** Latest reading per room (rooms with no data are omitted). */
+  getLatest(farmId: ID): Promise<EnvironmentalReading[]>
+  /** Readings for a room over the last `hours`. */
+  getHistory(farmId: ID, roomId: ID, hours: number): Promise<EnvironmentalReading[]>
+  /** Pushes new readings as they arrive. Returns an unsubscribe function. */
+  subscribe(farmId: ID, listener: (reading: EnvironmentalReading) => void): () => void
+}
+
+export interface AlertService {
+  list(farmId: ID): Promise<FarmAlert[]>
+  acknowledge(farmId: ID, alertId: ID): Promise<void>
+  resolve(farmId: ID, alertId: ID): Promise<void>
+}
+
+export type SearchKind = 'batch' | 'product' | 'customer' | 'order' | 'room' | 'species'
+
+export interface SearchResult {
+  kind: SearchKind
+  id: ID
+  title: string
+  subtitle: string
+  link: string
+}
+
+export interface SearchService {
+  search(farmId: ID, query: string): Promise<SearchResult[]>
+}
+
+export type WidgetId = 'glance' | 'overview' | 'alerts' | 'harvest' | 'forecast' | 'pipeline' | 'inventory' | 'finance' | 'sales' | 'tasks' | 'activity'
+
+export interface WidgetPreference {
+  id: WidgetId
+  visible: boolean
+}
+
+export interface PreferencesService {
+  getDashboardLayout(userId: ID): WidgetPreference[]
+  saveDashboardLayout(userId: ID, layout: WidgetPreference[]): void
 }

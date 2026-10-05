@@ -12,9 +12,9 @@ interface Toast {
 
 const icons = { success: CheckCircle2, error: AlertTriangle, info: Info }
 const iconTone = {
-  success: 'text-available-ink',
-  error: 'text-occupied-ink',
-  info: 'text-reserved-ink',
+  success: 'text-ok-ink',
+  error: 'text-crit-ink',
+  info: 'text-info-ink',
 }
 
 /** Short confirmations after an action ("Location created"). Announced to screen readers. */
@@ -49,7 +49,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={toast.id}
               role={toast.tone === 'error' ? 'alert' : 'status'}
-              className="glass-strong pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl px-4 py-3 text-sm text-text shadow-pop animate-fade-in"
+              className="panel-pop pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl px-4 py-3 text-sm text-text shadow-pop animate-fade-in"
             >
               <Icon aria-hidden className={cn('mt-0.5 size-4 shrink-0', iconTone[toast.tone])} />
               <p className="min-w-0 flex-1">{toast.message}</p>

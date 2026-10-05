@@ -1,25 +1,27 @@
-import { CalendarX2, CameraOff, CreditCard, Gauge, Wrench, type LucideIcon } from 'lucide-react'
-import type { AlertSeverity, AlertType } from '@/types'
+import { Droplets, Hourglass, PackageX, Thermometer, Timer, Truck, WifiOff, Wind, Wrench, type LucideIcon } from 'lucide-react'
+import type { AlertSeverity, AlertStatus, AlertType } from '@/types'
 import type { BadgeTone } from '@/components/ui/Badge'
 
 export const alertIcons: Record<AlertType, LucideIcon> = {
-  camera_offline: CameraOff,
-  space_maintenance: Wrench,
-  high_occupancy: Gauge,
-  payment_issue: CreditCard,
-  reservation_conflict: CalendarX2,
-}
-
-export const severityTone: Record<AlertSeverity, BadgeTone> = {
-  critical: 'danger',
-  warning: 'warning',
-  info: 'info',
+  temperature_high: Thermometer,
+  temperature_low: Thermometer,
+  humidity_high: Droplets,
+  humidity_low: Droplets,
+  co2_high: Wind,
+  sensor_offline: WifiOff,
+  batch_overdue: Timer,
+  low_inventory: PackageX,
+  order_overdue: Truck,
+  expiring: Hourglass,
+  maintenance_due: Wrench,
 }
 
 export const severityIconClass: Record<AlertSeverity, string> = {
-  critical: 'bg-occupied-soft text-occupied-ink',
-  warning: 'bg-maintenance-soft text-maintenance-ink',
-  info: 'bg-reserved-soft text-reserved-ink',
+  critical: 'bg-crit-soft text-crit-ink',
+  warning: 'bg-warn-soft text-warn-ink',
+  info: 'bg-info-soft text-info-ink',
 }
 
-export const severityOrder: Record<AlertSeverity, number> = { critical: 0, warning: 1, info: 2 }
+export const severityTone: Record<AlertSeverity, BadgeTone> = { critical: 'danger', warning: 'warning', info: 'info' }
+export const statusTone: Record<AlertStatus, BadgeTone> = { NEW: 'brand', ACKNOWLEDGED: 'neutral', RESOLVED: 'success' }
+

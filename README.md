@@ -1,98 +1,65 @@
-# Sky Parking — Parking Management Dashboard
+# Mushroom Farm Manager
 
-Web dashboard for parking lot owners and managers (project: **AI-Powered-Parking-Management**).
-Supports truck, RV and car parking locations (`ParkingLocation.category`), with per-space
-vehicle types, space types (oversized, compact, EV charging…) and price units (night/day/hour).
-The customer mobile app lives in a separate repository (`Sky-parking-app`).
+Management platform for mushroom farms. It follows the whole cycle:
+**Production → Batches → Cultivation → Harvest → Weight → Processing/Packing → Inventory → Sale → Customer → Revenue → Expenses → Profit/Loss**.
 
-> All 8 sections work end to end with **demo data** kept in the browser (localStorage).
-> Supabase is not connected yet; the service layer is ready for it.
+**Phase 1 (this release): the main farm dashboard.** It runs on generated **demo data**, and the architecture is ready to switch to real data in Supabase.
 
-## What works
+## What the dashboard shows
 
-| Section | What you can do |
-| --- | --- |
-| Dashboard | KPIs, occupancy chart, live parking map (click a space), alerts, activity, upcoming reservations, revenue |
-| Parking Locations | Create (with auto-generated spaces), edit, delete; live occupancy per lot |
-| Parking Spaces | Map and list views, filters, create/edit/delete, change status from the space panel |
-| Reservations | Upcoming / in progress / past views, search, create (with a new or existing customer), confirm, check in, check out, cancel |
-| Customers | Search, create/edit/delete, history and total spent per customer, book from the customer panel |
-| Analytics | Occupancy, revenue by day and by location, reservations by vehicle and status |
-| Cameras | Status per camera, mark online/offline/maintenance, create/edit/delete (video streaming comes later) |
-| Settings | Profile and organization, language and theme, alert threshold and notifications, reset demo data |
+- **KPIs** (each one links to its module): today's harvest, inventory (lb), orders, revenue, expenses, net profit, active batches, low-stock items. Each shows the change from the previous period.
+- **Farm at a glance**: what was produced, harvested, available, sold, spent and earned; ready batches; top product and species; what's expiring; environmental issues; and a "Needs attention" list.
+- **Farm overview**: 8 areas (Grow Rooms 01–03, Incubation, Fruiting, Cold Storage, Packing, Processing). Each shows live temperature, humidity and CO₂ against its targets, with a status (OK / Warning / Critical / Offline) and a 24 h trend chart.
+- **Alerts**: severity, timestamp, location, description and status NEW → ACKNOWLEDGED → RESOLVED. Every change is written to the audit log.
+- **Harvest** by species and day, waste %, yield vs expected, cost per lb.
+- **Harvest forecast** for this week, next week and this month, by species, plus batches ready in the next 24 h.
+- **Production pipeline**, **Inventory** (low stock, expiring lots), **Profit & loss**, **Sales**, **Today's tasks**, **Recent activity**.
+- **Customization**: show, hide and reorder widgets (saved per user). Also global search (Ctrl/⌘ K), notifications, multiple farms, role-based views, light/dark mode, EN/ES, and layouts for desktop, tablet and mobile.
 
-Changes ripple through the app: checking in occupies the space, checking out frees it and logs
-the payment, an offline camera or a space in maintenance raises an alert, and a location above
-the occupancy threshold is flagged. Log out shows a sign-in screen (demo account).
+The other modules (Production, Batches, Harvest, Inventory, Products, Customers, Orders, Sales/POS, Expenses, P&L, Environment, Suppliers, Employees, Equipment, Reports, Settings) already have reserved routes and are marked **Soon** in the sidebar.
 
-## Run locally
+## Architecture
+
+```
+src/
+  types/          Domain model (mirrors the SQL schema)
+  domain/         Pure business rules — inventory (stock = Σ movements, FIFO lots),
+                  finance (P&L), production (pipeline, yield, forecast),
+                  environment (status vs targets), alerts, permissions (roles)
+  services/       Contracts (contracts.ts) + change feed (push, no polling)
+    demo/         ⚠️ Demo implementations: auth, dashboard, alerts, search,
+                  preferences, DemoSensorProvider (simulated live feed)
+  data/demo/      ⚠️ Seeded generator that simulates 60 days of farm operation
+  hooks/          useAsync, useLiveEnvironment, useFormat, useAlertText…
+  components/     layout/ · dashboard/ · charts/ (hand-written SVG) · ui/
+  i18n/           Typed dictionaries (en = source, es)
+supabase/migrations/  Schema, RLS, append-only triggers, audit, Realtime
+```
+
+- **Every number is computed from records**: orders, expenses, harvests and inventory movements. Revenue, profit, inventory and costs are never hard-coded.
+- **Business rules**: stock can't go negative except through an explicit ADJUSTMENT with a reason. Harvests, inventory movements, expenses and the audit log are append-only (enforced by database triggers). Revenue is recognized when an order is completed. Inventory purchases reach the P&L through COGS, so they aren't counted twice.
+- **SensorProvider**: a hardware-agnostic interface (`getLatest`, `getHistory`, `subscribe`). The demo provider simulates a live feed; any vendor or gateway can implement it.
+- **Roles**: OWNER, FARM_MANAGER, GROWER, PACKING, SALES, ACCOUNTING, EMPLOYEE (see `domain/permissions.ts`). In demo mode the account menu has a "View as role" option to preview each role.
+- **Multiple farms**: users only see the farms they belong to (`farm_members` + RLS).
+
+## Demo data
+
+`src/data/demo` generates two farms: **Evergreen Mycology** and a smaller **North Annex**. Each has 5 species, 8 areas, ~60 days of batches and harvests, packing and drying, orders from 18 customers, recurring expenses, and sensor readings. It also seeds realistic current issues: falling humidity in Grow Room 02, rising CO₂ in the Fruiting Room, an offline sensor, an overdue batch, late orders, low stock and expiring lots. The data is deterministic (seeded) and relative to the current date.
+
+## Run
 
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm run build      # type-check (tsc -b) + production build
-npm run lint       # oxlint
-npm run preview    # serve the production build
+npm run build      # type-check + production build
+npm run lint
 ```
 
-Requires Node 20+.
+`.env.example` lists the variables. `VITE_ROUTER=hash` is used for GitHub Pages (`.github/workflows/deploy-pages.yml` publishes on every push to `main`).
 
-## Deploy (GitHub Pages)
+## Connecting Supabase (next step)
 
-`.github/workflows/deploy-pages.yml` builds the app on every push to `main` and publishes
-`dist/` to the `gh-pages` branch.
-One-time setup: **Settings → Pages → Build and deployment → Source: Deploy from a branch →
-`gh-pages` / (root)**.
-The Pages build uses hash routing (`VITE_ROUTER=hash`), so URLs look like `…/#/dashboard`.
-
-## Stack
-
-React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · React Router · lucide-react icons.
-Charts are hand-written SVG (no chart library) to keep the bundle small.
-
-## Structure
-
-```
-src/
-  types/            Domain types (ParkingLocation, ParkingSpace, Reservation, Customer,
-                    ParkingStats, RevenueStats, ActivityEvent, Alert, …)
-  data/mock/        ⚠️ DEMO SEED DATA — 4 locations (2 truck, 1 RV, 1 car), 198 spaces,
-                    cameras, customers, reservations, revenue generators,
-                    activity, alerts. Only imported by services/mock.
-  services/
-    contracts.ts    Service interfaces the UI depends on
-    mock/           Demo implementations + in-browser database (db.ts, change feed)
-    index.ts        Registry — the single place that picks the data source
-  hooks/            useAsync, useDashboardData, useLiveSpaces, useFormat, …
-  i18n/             Typed EN/ES dictionaries + provider (no hard-coded UI text)
-  context/          Theme, session (manager + selected location)
-  config/           Navigation, status colours/icons, alert & activity visuals
-  components/
-    layout/         DashboardLayout, Sidebar, Topbar, LocationSelector, menus
-    dashboard/      StatCard, KpiGrid, OccupancyChart, ParkingStatus, ParkingSpace,
-                    RecentActivity, ReservationTable, RevenueCard, AlertCard, QuickActions
-    ui/             Card, Badge, Button, Tooltip, Popover, SegmentedControl,
-                    Loading / Empty / Error states
-  pages/            DashboardPage, ComingSoonPage, NotFoundPage
-```
-
-## Connecting Supabase (next phase)
-
-1. `npm install @supabase/supabase-js`
-2. Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-   (public anon key only — **never** a `service_role` key in the browser).
-3. Implement the interfaces from `src/services/contracts.ts` in `src/services/supabase/`
-   and return them from `src/services/index.ts`.
-4. `changeFeed` (and `parkingService.subscribeToSpaces`) is where Supabase Realtime plugs in;
-   every screen already refreshes from it, with no polling.
-
-No component needs to change.
-
-## Design notes
-
-- Glassmorphism: translucent, blurred surfaces (`.glass`, `.glass-strong`) over a soft
-  colour backdrop. Light/dark themes share one design via CSS variables (`src/index.css`).
-- Parking status colours (available green, occupied red, reserved blue, maintenance amber,
-  disabled gray) are always paired with an icon, a label and a tooltip.
-- Responsive: full sidebar on desktop (collapsible), icon rail on tablet, drawer on mobile.
-  No horizontal page scroll.
+1. Create the project and apply `supabase/migrations/*.sql`.
+2. Implement the interfaces in `src/services/contracts.ts` with `@supabase/supabase-js`, using **only the anon key and the user's session**. RLS restricts every query to the user's farms and role. **Never put a `service_role` key in the frontend.**
+3. Feed `changeFeed` from Supabase Realtime (`environmental_readings`, `alerts`, `harvests`, `inventory_movements`, `orders`).
+4. Set `VITE_DATA_SOURCE=supabase` and register the new services in `src/services/index.ts`.

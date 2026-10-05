@@ -13,8 +13,8 @@ export function Card({ children, className, as: Tag = 'section', labelledBy }: C
     <Tag
       aria-labelledby={labelledBy}
       className={cn(
-        'glass rounded-card',
-        'p-5 sm:p-6',
+        'panel min-w-0 rounded-card',
+        'p-4 sm:p-5',
         className,
       )}
     >
@@ -29,16 +29,20 @@ interface CardHeaderProps {
   subtitle?: ReactNode
   action?: ReactNode
   className?: string
+  icon?: ReactNode
 }
 
-export function CardHeader({ id, title, subtitle, action, className }: CardHeaderProps) {
+export function CardHeader({ id, title, subtitle, action, className, icon }: CardHeaderProps) {
   return (
-    <header className={cn('mb-5 flex flex-wrap items-start justify-between gap-x-4 gap-y-3', className)}>
-      <div className="min-w-0">
-        <h2 id={id} className="font-display text-[0.8125rem] font-semibold uppercase tracking-[0.06em] text-text">
+    <header className={cn('mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-3', className)}>
+      <div className="flex min-w-0 items-start gap-2.5">
+        {icon && <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-text-secondary">{icon}</span>}
+        <div className="min-w-0">
+        <h2 id={id} className="font-display text-[1rem] font-semibold tracking-[-0.01em] text-text">
           {title}
         </h2>
-        {subtitle && <p className="mt-1 text-[0.8125rem] text-text-muted">{subtitle}</p>}
+        {subtitle && <p className="mt-0.5 text-[0.8125rem] text-text-muted">{subtitle}</p>}
+        </div>
       </div>
       {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
     </header>

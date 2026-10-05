@@ -30,7 +30,7 @@ interface EmptyStateProps {
 export function EmptyState({ title, description, icon: Icon = Inbox, action, className }: EmptyStateProps) {
   return (
     <div className={cn('flex flex-col items-center justify-center px-4 py-10 text-center', className)}>
-      <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-surface-sunken text-text-muted">
+      <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-surface-2 text-text-muted">
         <Icon aria-hidden className="size-5" />
       </div>
       <p className="text-sm font-semibold text-text">{title}</p>
@@ -49,7 +49,7 @@ export function ErrorState({ onRetry, className }: ErrorStateProps) {
   const { t } = useI18n()
   return (
     <div role="alert" className={cn('flex flex-col items-center justify-center px-4 py-10 text-center', className)}>
-      <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-occupied-soft text-occupied-ink">
+      <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-crit-soft text-crit-ink">
         <AlertTriangle aria-hidden className="size-5" />
       </div>
       <p className="text-sm font-semibold text-text">{t('states.errorTitle')}</p>

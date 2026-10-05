@@ -6,7 +6,9 @@ export function useFormat() {
   const { intlLocale, t } = useI18n()
 
   return useMemo(() => {
-    const integer = new Intl.NumberFormat(intlLocale)
+    const integer = new Intl.NumberFormat(intlLocale, { maximumFractionDigits: 0 })
+    const decimal = new Intl.NumberFormat(intlLocale, { maximumFractionDigits: 1 })
+    const exactCurrency = new Intl.NumberFormat(intlLocale, { style: 'currency', currency: 'USD' })
     const currency = new Intl.NumberFormat(intlLocale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
     const compactCurrency = new Intl.NumberFormat(intlLocale, {
       style: 'currency',
@@ -26,9 +28,13 @@ export function useFormat() {
     const weekday = new Intl.DateTimeFormat(intlLocale, { weekday: 'short' })
     const dayMonth = new Intl.DateTimeFormat(intlLocale, { month: 'short', day: 'numeric' })
     const dayMonthTime = new Intl.DateTimeFormat(intlLocale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    const longDate = new Intl.DateTimeFormat(intlLocale, { weekday: 'long', month: 'long', day: 'numeric' })
 
     return {
       number: (value: number) => integer.format(value),
+      decimal: (value: number) => decimal.format(value),
+      pounds: (value: number) => `${decimal.format(value)} lb`,
+      exactCurrency: (value: number) => exactCurrency.format(value),
       currency: (value: number) => currency.format(value),
       compactCurrency: (value: number) => compactCurrency.format(value),
       percent: (ratio: number) => percent.format(ratio),
@@ -38,11 +44,13 @@ export function useFormat() {
       weekday: (iso: string) => weekday.format(new Date(iso)),
       dayMonth: (iso: string) => dayMonth.format(new Date(iso)),
       dayMonthTime: (iso: string) => dayMonthTime.format(new Date(iso)),
+      longDate: (iso: string) => longDate.format(new Date(iso)),
       relative: (iso: string, now: Date = new Date()) => {
         const minutes = Math.round((now.getTime() - new Date(iso).getTime()) / 60_000)
         if (minutes < 1) return t('time.justNow')
         if (minutes < 60) return t('time.minutesAgo', { count: minutes })
-        return t('time.hoursAgo', { count: Math.floor(minutes / 60) })
+        if (minutes < 60 * 24) return t('time.hoursAgo', { count: Math.floor(minutes / 60) })
+        return t('time.daysAgo', { count: Math.floor(minutes / (60 * 24)) })
       },
     }
   }, [intlLocale, t])

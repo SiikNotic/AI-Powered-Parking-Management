@@ -18,7 +18,7 @@ export function HorizontalBars({ items, barClassName = 'bg-brand', label }: { it
             <span className="min-w-0 truncate text-text-secondary">{item.label}</span>
             <span className="tabular shrink-0 font-semibold text-text">{item.formatted}</span>
           </div>
-          <div aria-hidden className="h-2 overflow-hidden rounded-full bg-surface-sunken">
+          <div aria-hidden className="h-2 overflow-hidden rounded-full bg-surface-2">
             <div className={cn('h-full rounded-full', barClassName)} style={{ width: `${Math.max(2, (item.value / max) * 100)}%` }} />
           </div>
         </li>

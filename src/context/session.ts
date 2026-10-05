@@ -1,15 +1,14 @@
 import { createContext, useContext } from 'react'
-import type { AsyncResult } from '@/hooks/useAsync'
-import type { LocationFilter, Manager, ParkingLocation } from '@/types'
+import type { Permission } from '@/domain/permissions'
+import type { AppUser, Farm, Role } from '@/types'
 
 export interface SessionContextValue {
-  signedIn: boolean
-  manager: Manager | undefined
-  locations: AsyncResult<ParkingLocation[]>
-  selectedLocation: LocationFilter
-  setSelectedLocation: (location: LocationFilter) => void
-  /** The selected location object, or undefined when "All Locations" is active. */
-  activeLocation: ParkingLocation | undefined
+  user: AppUser
+  farms: Farm[]
+  farm: Farm
+  setFarmId: (id: string) => void
+  can: (permission: Permission) => boolean
+  setRole: (role: Role) => void
 }
 
 export const SessionContext = createContext<SessionContextValue | null>(null)

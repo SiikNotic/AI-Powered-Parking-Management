@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Sky Parking — parking management dashboard for lot owners and managers." />
-    <meta name="theme-color" content="#ecebf1" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0d0d12" media="(prefers-color-scheme: dark)" />
-    <title>Sky Parking</title>
+    <meta name="description" content="Mushroom Farm Manager — production, harvest, inventory, sales and environment for mushroom farms." />
+    <meta name="theme-color" content="#f4f2ed" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111210" media="(prefers-color-scheme: dark)" />
+    <title>Mushroom Farm Manager</title>
     <script>
       // Apply the saved theme before first paint to avoid a flash.
       try {
-        var t = localStorage.getItem('sky-parking.theme')
+        var t = localStorage.getItem('mushroom-farm.theme')
         if (t !== 'light' && t !== 'dark') t = document.documentElement.dataset.theme
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
         document.documentElement.dataset.theme = t

@@ -2,18 +2,17 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'signature' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'sm' | 'md'
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap transition-[background-color,color,box-shadow,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50'
+  'inline-flex items-center justify-center gap-2 rounded-xl font-medium whitespace-nowrap transition-[background-color,color,box-shadow,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-ink text-text-inverse hover:opacity-90',
-  secondary: 'bg-surface-hover text-text border border-glass-border hover:border-border-strong hover:bg-surface-raised',
+  primary: 'bg-brand text-text-inverse hover:opacity-90',
+  secondary: 'bg-surface-hover text-text border border-panel-border hover:border-border-strong hover:bg-surface-raised',
   ghost: 'text-text-secondary hover:text-text hover:bg-surface-hover',
-  danger: 'bg-occupied text-white hover:brightness-110',
-  signature: 'bg-signature text-white shadow-[0_6px_18px_-6px_rgba(236,79,143,0.55)] hover:brightness-105',
+  danger: 'bg-crit text-white hover:brightness-110',
 }
 
 const sizes: Record<Size, string> = {

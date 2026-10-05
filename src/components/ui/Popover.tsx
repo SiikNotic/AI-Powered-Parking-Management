@@ -94,7 +94,7 @@ export function Popover({ trigger, children, align = 'end', className, panelClas
           role="menu"
           aria-label={label}
           className={cn(
-            'absolute top-full z-50 mt-2 min-w-56 glass-strong rounded-2xl p-1.5 animate-fade-in',
+            'absolute top-full z-50 mt-2 min-w-56 panel-pop rounded-2xl p-1.5 animate-fade-in',
             align === 'end' ? 'right-0' : 'left-0',
             panelClassName,
           )}

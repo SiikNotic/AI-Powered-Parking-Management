@@ -28,7 +28,7 @@ export function SegmentedControl<T extends string>({ label, options, value, onCh
   }
 
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-full bg-surface-sunken p-1', className)}>
+    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-full bg-surface-2 p-1', className)}>
       {options.map((option, i) => {
         const selected = option.value === value
         return (

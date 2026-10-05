@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
-const COLLAPSE_KEY = 'sky-parking.sidebar-collapsed'
+const COLLAPSE_KEY = 'mushroom-farm.sidebar-collapsed'
 
 function readCollapsed(): boolean {
   try {
@@ -89,11 +89,11 @@ export function DashboardLayout() {
       {/* Tablet / desktop rail */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 hidden p-3 transition-[width] duration-200 md:block',
-          compact ? 'w-[5.5rem]' : 'w-[17rem]',
+          'fixed inset-y-0 left-0 z-40 hidden border-r border-border bg-surface transition-[width] duration-200 md:block',
+          compact ? 'w-[4.5rem]' : 'w-[16rem]',
         )}
       >
-        <div className="glass h-full rounded-[1.5rem] px-3 pb-3">
+        <div className="h-full px-3 pb-3">
           <Sidebar compact={compact} onToggleCollapse={isDesktop ? toggleCollapsed : undefined} />
         </div>
       </aside>
@@ -110,7 +110,7 @@ export function DashboardLayout() {
           />
           <div
             ref={drawerRef}
-            className="glass-strong absolute inset-y-0 left-0 w-[min(18rem,85vw)] rounded-r-[1.5rem] px-3 pb-3 animate-fade-in"
+            className="panel-pop absolute inset-y-0 left-0 w-[min(17rem,85vw)] rounded-r-2xl px-3 pb-3 animate-fade-in"
           >
             <Sidebar compact={false} inDrawer onClose={closeDrawer} />
           </div>
@@ -120,14 +120,14 @@ export function DashboardLayout() {
       <div
         className={cn(
           'flex min-h-dvh min-w-0 flex-col transition-[padding] duration-200',
-          compact ? 'md:pl-[5.5rem]' : 'md:pl-[17rem]',
+          compact ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]',
         )}
       >
         <Topbar onOpenMenu={() => setDrawerOpen(true)} />
         <main id="main-content" tabIndex={-1} className="flex-1 overflow-x-clip focus:outline-none">
           <Suspense
             fallback={
-              <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8" role="status" aria-busy="true">
+              <div className="mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-8" role="status" aria-busy="true">
                 <div className="skeleton h-64 rounded-card" />
               </div>
             }

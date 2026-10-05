@@ -1,128 +1,133 @@
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------
- * Sky Parking design tokens
- * One design, two themes: components only reference these variables.
+ * Mushroom Farm Manager — design tokens
+ * Natural, quiet surfaces (stone, mycelium, bark) with one deep
+ * "forest ink" brand tone and a warm ochre accent. Green is reserved for
+ * the brand and the "healthy" status; colour is never the only signal.
  * ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
 
-  /* Glass: translucent surfaces over a soft multi-colour backdrop */
-  --bg: #e6e5f1;
-  --bg-glow-1: rgba(132, 112, 255, 0.42);
-  --bg-glow-2: rgba(255, 158, 112, 0.34);
-  --bg-glow-3: rgba(86, 178, 255, 0.32);
-  --bg-glow-4: rgba(236, 92, 160, 0.2);
-  --surface: rgba(255, 255, 255, 0.56);
-  --surface-raised: rgba(255, 255, 255, 0.84);
-  --surface-sunken: rgba(24, 20, 48, 0.045);
-  --surface-hover: rgba(255, 255, 255, 0.62);
-  --surface-solid: #f6f5fb;
-  --glass-border: rgba(255, 255, 255, 0.72);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
-  --glass-blur: 22px;
-  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6e7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  --border: rgba(24, 20, 48, 0.08);
-  --border-strong: rgba(24, 20, 48, 0.16);
+  --bg: #f4f2ed;
+  --surface: #fdfcf9;
+  --surface-2: #f0ede6;
+  --surface-hover: #f5f2ec;
+  --surface-raised: #ffffff;
+  --border: #e5e1d8;
+  --border-strong: #d3cec2;
+  --grid: #ebe7de;
 
-  --text: #16151c;
-  --text-secondary: #55545f;
-  --text-muted: #6f6e7a;
-  --text-inverse: #ffffff;
+  --text: #1d1c19;
+  --text-secondary: #57544c;
+  --text-muted: #7c786d;
+  --text-inverse: #fdfcf9;
 
-  --brand: #5546d8;
-  --brand-soft: rgba(85, 70, 216, 0.1);
-  --brand-ink: #3f32b8;
-  --signature-from: #ff8a4c;
-  --signature-to: #ec4f8f;
-  --ink: #1b1a22;
+  --brand: #24493f;
+  --brand-soft: #e3ebe6;
+  --brand-ink: #1e4037;
+  --accent: #b9772b;
+  --accent-soft: #f6ead9;
+  --ink: #1d1c19;
+  --focus: #2f6b5b;
 
-  --focus: #5546d8;
+  --ok: #2f8a5c;
+  --ok-soft: #e2f1e8;
+  --ok-ink: #1f6b45;
+  --warn: #c27c1a;
+  --warn-soft: #faeed8;
+  --warn-ink: #8c5509;
+  --crit: #c2413a;
+  --crit-soft: #fae4e1;
+  --crit-ink: #a12c26;
+  --info: #3c67a8;
+  --info-soft: #e3ebf6;
+  --info-ink: #2b528c;
+  --offline: #8a867c;
+  --offline-soft: #ecebe6;
+  --offline-ink: #5e5b53;
 
-  /* Parking status — never used without an icon + label */
-  --status-available: #22a06b;
-  --status-available-soft: rgba(34, 160, 107, 0.12);
-  --status-available-ink: #0f7a4d;
-  --status-occupied: #d63b42;
-  --status-occupied-soft: rgba(214, 59, 66, 0.11);
-  --status-occupied-ink: #b4232b;
-  --status-reserved: #3a6fe0;
-  --status-reserved-soft: rgba(58, 111, 224, 0.12);
-  --status-reserved-ink: #2350b8;
-  --status-maintenance: #d9811a;
-  --status-maintenance-soft: rgba(217, 129, 26, 0.14);
-  --status-maintenance-ink: #96530a;
-  --status-disabled: #8e8d99;
-  --status-disabled-soft: rgba(142, 141, 153, 0.16);
-  --status-disabled-ink: #5d5c68;
+  /* Species palette (stable per species, muted, distinguishable) */
+  --sp-0: #5679a8;
+  --sp-1: #d0a04a;
+  --sp-2: #8f5638;
+  --sp-3: #6f9466;
+  --sp-4: #a5404c;
 
-  --shadow-card: 0 1px 2px rgba(24, 20, 48, 0.04), 0 12px 32px -14px rgba(60, 40, 140, 0.22);
-  --shadow-pop: 0 18px 48px -14px rgba(40, 24, 110, 0.35), 0 2px 6px rgba(24, 20, 48, 0.06);
+  --chart-revenue: #24493f;
+  --chart-expense: #c9a27a;
+  --chart-profit: #b9772b;
 
-  --radius-card: 22px;
+  --shadow-card: 0 1px 2px rgba(40, 34, 20, 0.04), 0 4px 16px -8px rgba(40, 34, 20, 0.1);
+  --shadow-pop: 0 18px 44px -16px rgba(40, 34, 20, 0.28), 0 2px 6px rgba(40, 34, 20, 0.06);
+  --radius-card: 18px;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237c786d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: #0a0a12;
-  --bg-glow-1: rgba(112, 92, 255, 0.3);
-  --bg-glow-2: rgba(255, 120, 90, 0.12);
-  --bg-glow-3: rgba(56, 150, 255, 0.2);
-  --bg-glow-4: rgba(236, 72, 153, 0.14);
-  --surface: rgba(28, 28, 42, 0.56);
-  --surface-raised: rgba(32, 32, 48, 0.88);
-  --surface-sunken: rgba(255, 255, 255, 0.045);
-  --surface-hover: rgba(255, 255, 255, 0.07);
-  --surface-solid: #16161f;
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --bg: #111210;
+  --surface: #191a17;
+  --surface-2: #22231f;
+  --surface-hover: #1f201d;
+  --surface-raised: #23241f;
+  --border: #2c2d28;
+  --border-strong: #3b3c35;
+  --grid: #272823;
 
-  --text: #f2f1f7;
-  --text-secondary: #b0afbd;
-  --text-muted: #8c8b98;
-  --text-inverse: #0d0d12;
+  --text: #ecebe5;
+  --text-secondary: #bab8ae;
+  --text-muted: #8f8d83;
+  --text-inverse: #141512;
 
-  --brand: #8d82ff;
-  --brand-soft: rgba(141, 130, 255, 0.14);
-  --brand-ink: #b1a9ff;
-  --ink: #f2f1f7;
+  --brand: #8fc0ab;
+  --brand-soft: #1f2e29;
+  --brand-ink: #a9d3c0;
+  --accent: #e0a456;
+  --accent-soft: #2f2618;
+  --ink: #ecebe5;
+  --focus: #8fc0ab;
 
-  --focus: #a59cff;
+  --ok: #4cb37f;
+  --ok-soft: #18291f;
+  --ok-ink: #7fd2a5;
+  --warn: #e3a03c;
+  --warn-soft: #2e2414;
+  --warn-ink: #f0c27c;
+  --crit: #ec6a62;
+  --crit-soft: #331a18;
+  --crit-ink: #ff9b94;
+  --info: #6d9be0;
+  --info-soft: #18233a;
+  --info-ink: #9ec0f4;
+  --offline: #7d7a71;
+  --offline-soft: #262622;
+  --offline-ink: #b1aea4;
 
-  --status-available: #22a06b;
-  --status-available-soft: rgba(48, 196, 132, 0.14);
-  --status-available-ink: #5fd8a3;
-  --status-occupied: #f0575d;
-  --status-occupied-soft: rgba(240, 87, 93, 0.15);
-  --status-occupied-ink: #ff8f93;
-  --status-reserved: #5b8cff;
-  --status-reserved-soft: rgba(91, 140, 255, 0.16);
-  --status-reserved-ink: #93b3ff;
-  --status-maintenance: #e8952e;
-  --status-maintenance-soft: rgba(232, 149, 46, 0.16);
-  --status-maintenance-ink: #f5b86a;
-  --status-disabled: #74737f;
-  --status-disabled-soft: rgba(142, 141, 153, 0.16);
-  --status-disabled-ink: #a9a8b4;
+  --sp-0: #7c9fd0;
+  --sp-1: #e2b866;
+  --sp-2: #c0815e;
+  --sp-3: #91b886;
+  --sp-4: #d06a75;
 
-  --shadow-card: 0 12px 32px -14px rgba(0, 0, 0, 0.7);
-  --shadow-pop: 0 16px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --chart-revenue: #8fc0ab;
+  --chart-expense: #8a7258;
+  --chart-profit: #e0a456;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px -10px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 18px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Unbounded Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
 
   --color-bg: var(--bg);
   --color-surface: var(--surface);
-  --color-surface-raised: var(--surface-raised);
-  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-2: var(--surface-2);
   --color-surface-hover: var(--surface-hover);
-  --color-surface-solid: var(--surface-solid);
-  --color-glass-border: var(--glass-border);
+  --color-surface-raised: var(--surface-raised);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-text: var(--text);
@@ -132,30 +137,33 @@
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
   --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-ink: var(--ink);
   --color-focus: var(--focus);
 
-  --color-available: var(--status-available);
-  --color-available-soft: var(--status-available-soft);
-  --color-available-ink: var(--status-available-ink);
-  --color-occupied: var(--status-occupied);
-  --color-occupied-soft: var(--status-occupied-soft);
-  --color-occupied-ink: var(--status-occupied-ink);
-  --color-reserved: var(--status-reserved);
-  --color-reserved-soft: var(--status-reserved-soft);
-  --color-reserved-ink: var(--status-reserved-ink);
-  --color-maintenance: var(--status-maintenance);
-  --color-maintenance-soft: var(--status-maintenance-soft);
-  --color-maintenance-ink: var(--status-maintenance-ink);
-  --color-disabled: var(--status-disabled);
-  --color-disabled-soft: var(--status-disabled-soft);
-  --color-disabled-ink: var(--status-disabled-ink);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-ink: var(--ok-ink);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-ink: var(--warn-ink);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+  --color-crit-ink: var(--crit-ink);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-ink: var(--info-ink);
+  --color-offline: var(--offline);
+  --color-offline-soft: var(--offline-soft);
+  --color-offline-ink: var(--offline-ink);
 
   --shadow-card: var(--shadow-card);
   --shadow-pop: var(--shadow-pop);
   --radius-card: var(--radius-card);
 
   --breakpoint-xs: 30rem;
+  --breakpoint-3xl: 112rem;
 }
 
 @layer base {
@@ -174,21 +182,6 @@
     font-feature-settings: 'cv11', 'ss01';
   }
 
-  /* Colour fields behind the glass. A fixed layer (not background-attachment) so it stays smooth on phones. */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(42rem 32rem at 92% 4%, var(--bg-glow-1), transparent 62%),
-      radial-gradient(36rem 30rem at 4% 96%, var(--bg-glow-2), transparent 62%),
-      radial-gradient(34rem 28rem at 8% 18%, var(--bg-glow-3), transparent 60%),
-      radial-gradient(30rem 26rem at 78% 88%, var(--bg-glow-4), transparent 60%);
-  }
-
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 2px;
@@ -201,29 +194,18 @@
 }
 
 @layer utilities {
-  /* Frosted panel: cards, sidebar, topbar */
-  .glass {
+  /* Card surface */
+  .panel {
     background-color: var(--surface);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-highlight);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
-    backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
   }
 
-  /* Denser glass for floating layers: menus, dialogs, toasts */
-  .glass-strong {
+  /* Floating layers: menus, dialogs, toasts */
+  .panel-pop {
     background-color: var(--surface-raised);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-pop), inset 0 1px 0 var(--glass-highlight);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    backdrop-filter: blur(28px) saturate(180%);
-  }
-
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass,
-    .glass-strong {
-      background-color: var(--surface-solid);
-    }
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-pop);
   }
 
   .tabular {
@@ -238,23 +220,23 @@
     color: var(--text-muted);
   }
 
-  .bg-signature {
-    background-image: linear-gradient(100deg, var(--signature-from), var(--signature-to));
-  }
-
   .skeleton {
-    background: linear-gradient(90deg, var(--surface-sunken) 0%, var(--surface-hover) 50%, var(--surface-sunken) 100%);
+    background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-hover) 50%, var(--surface-2) 100%);
     background-size: 200% 100%;
     animation: skeleton 1.4s ease-in-out infinite;
   }
 
   .animate-fade-in {
-    animation: fade-in 240ms ease-out both;
+    animation: fade-in 220ms ease-out both;
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: var(--border-strong) transparent;
+  }
+
+  .live-dot {
+    animation: live-pulse 2s ease-out infinite;
   }
 }
 
@@ -269,7 +251,7 @@
 }
 
 @keyframes live-pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-available) 55%, transparent); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); }
   70% { box-shadow: 0 0 0 6px transparent; }
   100% { box-shadow: 0 0 0 0 transparent; }
 }

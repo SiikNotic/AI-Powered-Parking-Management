@@ -83,7 +83,7 @@ export function Modal({ open, onClose, title, description, children, footer, siz
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          'glass-strong relative flex max-h-[92dvh] w-full flex-col animate-fade-in',
+          'panel-pop relative flex max-h-[92dvh] w-full flex-col animate-fade-in',
           side ? 'h-full max-h-none max-w-md rounded-l-[1.75rem]' : cn('rounded-t-[1.75rem] sm:rounded-[1.75rem]', sizes[size]),
         )}
       >

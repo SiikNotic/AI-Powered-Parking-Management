@@ -1,290 +1,346 @@
 /**
- * Domain types for Sky Parking.
+ * Domain model for Mushroom Farm Manager.
  *
- * These mirror the shape we expect from the future Supabase schema
- * (snake_case columns are mapped to camelCase in the service layer).
- * UI components only ever depend on these types — never on the data source.
+ * Mirrors the Supabase schema in `supabase/migrations` (snake_case columns are
+ * mapped to camelCase in the service layer). Every record belongs to a farm,
+ * ids are UUIDs, and history is append-only: harvests, weighings, inventory
+ * movements and financial transactions are never overwritten.
  */
 
 export type ID = string
+export type ISODate = string
 
-/** ISO-8601 timestamp string, e.g. "2026-10-05T08:42:00.000Z". */
-export type ISODateString = string
+// ---------- Organization ----------
 
-/** All monetary amounts in the app are expressed in whole units of this currency. */
-export type CurrencyCode = 'USD'
-
-/** "all" is a virtual selection meaning "aggregate every location". */
-export type LocationFilter = ID | 'all'
-
-export type SpaceStatus = 'available' | 'occupied' | 'reserved' | 'maintenance' | 'disabled'
-
-/** What kind of vehicles a location is built for. */
-export type ParkingCategory = 'truck' | 'car' | 'rv'
-
-export type SpaceType = 'truck' | 'trailer' | 'oversized' | 'rv' | 'car' | 'compact' | 'ev'
-
-export type VehicleType =
-  | 'semi_trailer'
-  | 'bobtail'
-  | 'box_truck'
-  | 'rv'
-  | 'car'
-  | 'suv'
-  | 'pickup'
-  | 'motorcycle'
-  | 'van'
-
-/** Billing period for a space's price (trucks/RVs per night, cars per day). */
-export type PriceUnit = 'night' | 'day' | 'hour'
-
-export interface ParkingLocation {
+export interface Farm {
   id: ID
   name: string
-  city: string
-  state: string
-  address: string
+  location: string
   timezone: string
-  totalSpaces: number
-  category: ParkingCategory
-  /** Short code used for space labels (e.g. "PHL"). */
-  code: string
 }
 
-export interface ParkingSpace {
+export type Role = 'OWNER' | 'FARM_MANAGER' | 'GROWER' | 'PACKING' | 'SALES' | 'ACCOUNTING' | 'EMPLOYEE'
+
+export interface AppUser {
   id: ID
-  locationId: ID
-  /** Human-facing space number, unique per location. */
-  number: number
-  /** Logical zone / row inside the lot, e.g. "A". */
-  zone: string
-  status: SpaceStatus
-  type: SpaceType
-  /** Length in feet. */
-  length: number
-  /** Width in feet. */
-  width: number
-  /** Price in USD per `priceUnit`. */
-  price: number
-  priceUnit: PriceUnit
-  vehicleTypes: VehicleType[]
-  updatedAt: ISODateString
+  name: string
+  email: string
+  role: Role
+  /** Farms this user may access (enforced by RLS through farm_members). */
+  farmIds: ID[]
 }
 
-export type ReservationStatus = 'confirmed' | 'pending' | 'checked_in' | 'completed' | 'cancelled'
+export type StaffRole = 'farm_manager' | 'grower' | 'harvester' | 'packing' | 'sales' | 'delivery'
+
+export interface Employee {
+  id: ID
+  farmId: ID
+  name: string
+  role: StaffRole
+  phone: string
+  email: string
+  active: boolean
+}
+
+// ---------- Growing ----------
+
+export interface Range {
+  min: number
+  max: number
+}
+
+export interface MushroomSpecies {
+  id: ID
+  name: string
+  scientificName: string
+  /** °F */
+  incubationTemp: Range
+  fruitingTemp: Range
+  /** % relative humidity */
+  humidity: Range
+  /** ppm */
+  co2: Range
+  /** Expected harvest as a share of substrate weight (0–1). */
+  averageYield: number
+  /** Days from inoculation to first harvest. */
+  averageGrowDays: number
+  shelfLifeDays: number
+  /** Chart colour slot (stable per species). */
+  colorIndex: number
+}
+
+export type RoomType = 'grow' | 'incubation' | 'fruiting' | 'cold_storage' | 'packing' | 'processing'
+
+export interface GrowRoom {
+  id: ID
+  farmId: ID
+  name: string
+  type: RoomType
+  /** Target environment for the room. */
+  targets: { temperature: Range; humidity: Range; co2: Range }
+  sensorId: string
+}
+
+export type Metric = 'temperature' | 'humidity' | 'co2'
+
+export interface EnvironmentalReading {
+  roomId: ID
+  sensorId: string
+  timestamp: ISODate
+  temperature: number
+  humidity: number
+  co2: number
+}
+
+export type BatchStatus =
+  | 'PLANNED'
+  | 'INOCULATED'
+  | 'COLONIZING'
+  | 'FRUITING'
+  | 'READY_TO_HARVEST'
+  | 'HARVESTED'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'DISCARDED'
+
+export interface ProductionBatch {
+  id: ID
+  /** Human-facing code, e.g. 2026-00124. */
+  code: string
+  farmId: ID
+  speciesId: ID
+  roomId: ID
+  substrate: string
+  /** lb */
+  substrateWeight: number
+  spawnWeight: number
+  bags: number
+  spawnDate: ISODate
+  inoculationDate: ISODate | null
+  colonizationDate: ISODate | null
+  fruitingDate: ISODate | null
+  expectedHarvestDate: ISODate
+  status: BatchStatus
+  createdBy: ID
+  /** Production cost attributed to the batch (substrate, spawn, labour share). */
+  cost: number
+  notes?: string
+}
+
+export type HarvestGrade = 'A' | 'B' | 'C'
+
+/** One harvest flush. Append-only. */
+export interface Harvest {
+  id: ID
+  batchId: ID
+  date: ISODate
+  /** Wet weight at harvest, lb */
+  wetWeight: number
+  wasteWeight: number
+  grade: HarvestGrade
+  employeeId: ID
+  roomId: ID
+}
+
+// ---------- Inventory ----------
+
+export type ProductCategory = 'fresh' | 'dried' | 'powder' | 'kit' | 'spawn' | 'substrate' | 'packaging' | 'supplies'
+
+export type InventoryUnit = 'lb' | 'oz' | 'unit'
+
+export interface InventoryLocation {
+  id: ID
+  farmId: ID
+  name: string
+  kind: 'grow_room' | 'cold_storage' | 'warehouse' | 'packing' | 'retail' | 'vehicle'
+}
+
+export interface InventoryProduct {
+  id: ID
+  farmId: ID
+  sku: string
+  name: string
+  speciesId: ID | null
+  category: ProductCategory
+  unit: InventoryUnit
+  /** Net weight of one unit in lb (for unit-based products). */
+  unitWeight: number | null
+  cost: number
+  price: number
+  reorderPoint: number
+  locationId: ID
+  perishable: boolean
+}
+
+export type MovementType = 'RECEIVED' | 'PRODUCED' | 'HARVESTED' | 'PACKED' | 'SOLD' | 'DAMAGED' | 'WASTED' | 'ADJUSTMENT' | 'TRANSFERRED'
+
+/**
+ * Every change to stock is a movement. Stock on hand is always the sum of
+ * movements — the final number is never edited directly.
+ */
+export interface InventoryMovement {
+  id: ID
+  productId: ID
+  type: MovementType
+  /** Signed quantity in the product's unit. */
+  quantity: number
+  date: ISODate
+  batchId: ID | null
+  /** Lot expiry for perishable stock coming in. */
+  expiresAt: ISODate | null
+  fromLocationId: ID | null
+  toLocationId: ID | null
+  userId: ID
+  reference?: string
+}
+
+// ---------- Sales ----------
+
+export type CustomerType = 'wholesale' | 'restaurant' | 'retail' | 'individual' | 'distributor'
 
 export interface Customer {
   id: ID
+  farmId: ID
   name: string
+  company?: string
+  type: CustomerType
   email: string
   phone: string
-  company?: string
-  createdAt?: ISODateString
+  paymentTerms: 'due_on_receipt' | 'net_15' | 'net_30'
 }
 
-/** Customer plus figures computed from their reservations. */
-export interface CustomerSummary extends Customer {
-  reservationCount: number
-  activeReservations: number
-  totalSpent: number
-  lastVisit?: ISODateString
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'OUT_FOR_DELIVERY' | 'COMPLETED' | 'CANCELLED'
+export type SaleChannel = 'in_person' | 'online' | 'wholesale' | 'delivery' | 'pickup'
+export type PaymentMethod = 'card' | 'cash' | 'transfer' | 'invoice'
+
+export interface OrderItem {
+  productId: ID
+  quantity: number
+  unitPrice: number
+  /** Unit cost captured at sale time (for COGS). */
+  unitCost: number
 }
 
-export interface Reservation {
+export interface Order {
   id: ID
-  /** Public code shown to managers and customers, e.g. "SP-1042". */
   code: string
-  locationId: ID
-  spaceId: ID
-  spaceNumber: number
-  customer: Customer
-  vehicleType: VehicleType
-  checkIn: ISODateString
-  checkOut: ISODateString
-  status: ReservationStatus
-  total: number
-  currency: CurrencyCode
+  farmId: ID
+  customerId: ID
+  channel: SaleChannel
+  status: OrderStatus
+  items: OrderItem[]
+  discount: number
+  taxRate: number
+  paymentMethod: PaymentMethod
+  paid: boolean
+  createdAt: ISODate
+  dueAt: ISODate
+  fulfillment: 'pickup' | 'delivery'
+  processedBy: ID
 }
 
-/** Point-in-time snapshot used by KPI cards and the live status panel. */
-export interface ParkingStats {
-  total: number
-  available: number
-  occupied: number
-  reserved: number
-  maintenance: number
-  disabled: number
-  /** Same metrics 24h earlier, used for the "vs yesterday" deltas. */
-  previous: {
-    available: number
-    occupied: number
-    reserved: number
-  }
-}
+// ---------- Finance ----------
 
-export interface RevenuePoint {
-  /** ISO date (yyyy-mm-dd) */
-  date: string
-  amount: number
-}
+export type ExpenseCategory =
+  | 'substrate'
+  | 'spawn'
+  | 'electricity'
+  | 'water'
+  | 'rent'
+  | 'labor'
+  | 'packaging'
+  | 'transportation'
+  | 'equipment'
+  | 'maintenance'
+  | 'marketing'
+  | 'insurance'
+  | 'other'
 
-export interface RevenueStats {
-  currency: CurrencyCode
-  today: number
-  thisWeek: number
-  thisMonth: number
-  previousWeek: number
-  /** Daily revenue, oldest first. */
-  daily: RevenuePoint[]
-}
-
-export type OccupancyPeriod = 'today' | '7d' | '30d'
-
-export interface OccupancyPoint {
-  timestamp: ISODateString
-  occupied: number
-  available: number
-}
-
-export interface OccupancySeries {
-  period: OccupancyPeriod
-  capacity: number
-  points: OccupancyPoint[]
-}
-
-export type ActivityType =
-  | 'space_occupied'
-  | 'space_available'
-  | 'reservation_confirmed'
-  | 'reservation_received'
-  | 'reservation_cancelled'
-  | 'check_in'
-  | 'check_out'
-  | 'payment_received'
-  | 'location_created'
-  | 'customer_created'
-  | 'space_maintenance'
-  | 'camera_offline'
-  | 'camera_online'
-
-export type ActivityTone = 'success' | 'info' | 'warning' | 'danger' | 'neutral'
-
-/**
- * Activity events are stored as structured data (type + params) instead of
- * pre-rendered sentences so the UI can translate them into any language.
- */
-export interface ActivityEvent {
+/** Financial transactions are immutable; corrections are new records. */
+export interface Expense {
   id: ID
-  type: ActivityType
-  locationId: ID
-  occurredAt: ISODateString
-  params: {
-    spaceNumber?: number
-    reservationCode?: string
-    customerName?: string
-    amount?: number
-    locationName?: string
-    cameraName?: string
-  }
+  farmId: ID
+  date: ISODate
+  category: ExpenseCategory
+  description: string
+  amount: number
+  vendor: string
+  paymentMethod: PaymentMethod
 }
+
+// ---------- Operations ----------
+
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'COMPLETED'
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+
+export interface FarmTask {
+  id: ID
+  farmId: ID
+  title: string
+  status: TaskStatus
+  priority: TaskPriority
+  assigneeId: ID
+  dueAt: ISODate
+  relatedBatchId?: ID
+}
+
+export interface Equipment {
+  id: ID
+  farmId: ID
+  name: string
+  kind: 'humidifier' | 'hvac' | 'fan' | 'sensor' | 'fridge' | 'scale' | 'sealer'
+  roomId: ID
+  serial: string
+  status: 'operational' | 'maintenance_due' | 'offline'
+  nextMaintenance: ISODate
+}
+
+// ---------- Alerts, audit ----------
 
 export type AlertSeverity = 'critical' | 'warning' | 'info'
-
+export type AlertStatus = 'NEW' | 'ACKNOWLEDGED' | 'RESOLVED'
 export type AlertType =
-  | 'camera_offline'
-  | 'space_maintenance'
-  | 'high_occupancy'
-  | 'payment_issue'
-  | 'reservation_conflict'
+  | 'temperature_high'
+  | 'temperature_low'
+  | 'humidity_high'
+  | 'humidity_low'
+  | 'co2_high'
+  | 'sensor_offline'
+  | 'batch_overdue'
+  | 'low_inventory'
+  | 'order_overdue'
+  | 'expiring'
+  | 'maintenance_due'
 
-export interface Alert {
+export interface FarmAlert {
+  /** Stable id derived from the cause, so status survives recomputation. */
   id: ID
-  /** Computed from the current state (e.g. an offline camera); resolves itself when the cause is fixed. */
-  derived?: boolean
   type: AlertType
   severity: AlertSeverity
-  locationId: ID
-  createdAt: ISODateString
-  params: {
-    spaceNumber?: number
-    cameraName?: string
-    percentage?: number
-    reservationCode?: string
-    amount?: number
-  }
+  status: AlertStatus
+  createdAt: ISODate
+  /** Room, product or entity the alert is about. */
+  location: string
+  params: Record<string, string | number>
+  link?: string
 }
 
-export interface Manager {
+export interface AuditEntry {
   id: ID
-  firstName: string
-  lastName: string
-  email: string
-  role: 'owner' | 'manager'
-  organization: {
-    id: ID
-    name: string
-  }
+  userId: ID
+  action: 'created' | 'updated' | 'recorded' | 'adjusted' | 'processed' | 'acknowledged' | 'resolved'
+  entity: 'batch' | 'harvest' | 'inventory' | 'order' | 'product' | 'waste' | 'alert' | 'expense'
+  entityLabel: string
+  date: ISODate
+  oldValue?: string
+  newValue?: string
 }
 
-export type CameraStatus = 'online' | 'offline' | 'maintenance'
+// ---------- Dashboard ----------
 
-export interface Camera {
-  id: ID
-  locationId: ID
-  name: string
-  /** What the camera covers, e.g. "Entrance" or "Zone B". */
-  coverage: string
-  status: CameraStatus
-  resolution: '720p' | '1080p' | '4K'
-  lastSeenAt: ISODateString
-}
+export type Period = 'today' | '7d' | '30d'
 
-export interface AppSettings {
-  /** Raise a high-occupancy alert when a location reaches this share (0–100). */
-  occupancyAlertThreshold: number
-  emailAlerts: boolean
-  dailySummary: boolean
-}
-
-// ---------- Inputs for create / update operations ----------
-
-export interface LocationInput {
-  name: string
-  city: string
-  state: string
-  address: string
-  category: ParkingCategory
-  code: string
-  timezone: string
-}
-
-/** Optional spaces generated together with a new location. */
-export interface LocationSetup {
-  spaces: number
-  zones: number
-  price: number
-  priceUnit: PriceUnit
-}
-
-export type SpaceInput = Omit<ParkingSpace, 'id' | 'updatedAt'>
-
-export type CustomerInput = Omit<Customer, 'id' | 'createdAt'>
-
-export interface ReservationInput {
-  locationId: ID
-  spaceId: ID
-  customerId: ID
-  vehicleType: VehicleType
-  checkIn: ISODateString
-  checkOut: ISODateString
-  status: Extract<ReservationStatus, 'confirmed' | 'pending'>
-}
-
-export type CameraInput = Omit<Camera, 'id' | 'lastSeenAt'>
-
-export interface ManagerInput {
-  firstName: string
-  lastName: string
-  email: string
-  organizationName: string
+export interface DateRange {
+  from: ISODate
+  to: ISODate
 }
