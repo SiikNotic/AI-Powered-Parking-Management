@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ROUTES } from '@/config/navigation'
 import { SessionProvider } from '@/context/SessionContext'
@@ -18,12 +18,15 @@ const placeholderPages = [
   'settings',
 ] as const
 
+// Hash routing is for static hosts without SPA rewrites (set VITE_ROUTER=hash at build time).
+const Router = import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : BrowserRouter
+
 export default function App() {
   return (
     <ThemeProvider>
       <I18nProvider>
         <SessionProvider>
-          <BrowserRouter>
+          <Router>
             <Routes>
               <Route element={<DashboardLayout />}>
                 <Route index element={<Navigate to={ROUTES.dashboard} replace />} />
@@ -34,7 +37,7 @@ export default function App() {
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </Router>
         </SessionProvider>
       </I18nProvider>
     </ThemeProvider>

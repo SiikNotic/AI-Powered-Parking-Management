@@ -10,6 +10,8 @@ function initialTheme(): Theme {
   } catch {
     /* storage unavailable */
   }
+  const preset = document.documentElement.dataset.theme
+  if (preset === 'light' || preset === 'dark') return preset
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
