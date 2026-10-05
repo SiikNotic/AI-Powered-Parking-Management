@@ -22,8 +22,10 @@ Requires Node 20+.
 
 ## Deploy (GitHub Pages)
 
-`.github/workflows/deploy-pages.yml` builds and deploys on every push to `main`.
-One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+`.github/workflows/deploy-pages.yml` builds the app on every push to `main` and publishes
+`dist/` to the `gh-pages` branch.
+One-time setup: **Settings → Pages → Build and deployment → Source: Deploy from a branch →
+`gh-pages` / (root)**.
 The Pages build uses hash routing (`VITE_ROUTER=hash`), so URLs look like `…/#/dashboard`.
 
 ## Stack
