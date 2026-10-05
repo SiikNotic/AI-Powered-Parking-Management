@@ -11,11 +11,10 @@ interface QuickAction {
   primary?: boolean
 }
 
-// Targets are placeholder routes for now ("Coming soon" pages).
 const actions: QuickAction[] = [
-  { key: 'dashboard.quickActions.addLocation', to: ROUTES.parkingLocations, icon: MapPinPlus, primary: true },
-  { key: 'dashboard.quickActions.addSpace', to: ROUTES.parkingSpaces, icon: SquarePlus },
-  { key: 'dashboard.quickActions.viewMap', to: ROUTES.parkingSpaces, icon: Map },
+  { key: 'dashboard.quickActions.addLocation', to: `${ROUTES.parkingLocations}?new=1`, icon: MapPinPlus, primary: true },
+  { key: 'dashboard.quickActions.addSpace', to: `${ROUTES.parkingSpaces}?new=1`, icon: SquarePlus },
+  { key: 'dashboard.quickActions.viewMap', to: `${ROUTES.parkingSpaces}?view=map`, icon: Map },
   { key: 'dashboard.quickActions.viewReservations', to: ROUTES.reservations, icon: CalendarClock },
 ]
 
@@ -35,7 +34,7 @@ export function QuickActions({ className }: { className?: string }) {
                 'flex h-12 items-center gap-2.5 rounded-full px-4 text-[0.8125rem] font-semibold transition-[filter,background-color,border-color] sm:h-14 sm:px-5',
                 primary
                   ? 'bg-signature text-white shadow-[0_8px_24px_-10px_rgba(236,79,143,0.6)] hover:brightness-105'
-                  : 'border border-border bg-surface text-text shadow-card hover:border-border-strong hover:bg-surface-raised',
+                  : 'glass text-text hover:bg-surface-raised',
               )}
             >
               <span

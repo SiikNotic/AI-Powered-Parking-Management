@@ -1,6 +1,6 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAsync } from '@/hooks/useAsync'
-import { authService, parkingService } from '@/services'
+import { authService, changeFeed, parkingService } from '@/services'
 import type { LocationFilter } from '@/types'
 import { SessionContext, type SessionContextValue } from './session'
 
@@ -19,8 +19,11 @@ function storedLocation(): LocationFilter {
  * When Supabase Auth is connected, `authService.getCurrentManager` will read the session.
  */
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const managerState = useAsync(() => authService.getCurrentManager(), [])
-  const locations = useAsync(() => parkingService.getLocations(), [])
+  const managerState = useAsync(() => authService.getCurrentManager(), [], ['session'])
+  const locations = useAsync(() => parkingService.getLocations(), [], ['locations', 'spaces'])
+  const [signedIn, setSignedIn] = useState(() => authService.isSignedIn())
+
+  useEffect(() => changeFeed.subscribe(['session'], () => setSignedIn(authService.isSignedIn())), [])
   const [selectedLocation, setSelected] = useState<LocationFilter>(storedLocation)
 
   // Fall back to "all" if a stored location no longer exists.
@@ -31,6 +34,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<SessionContextValue>(
     () => ({
+      signedIn,
       manager: managerState.data,
       locations,
       selectedLocation: effectiveLocation,
@@ -44,7 +48,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       },
       activeLocation: locations.data?.find((l) => l.id === effectiveLocation),
     }),
-    [managerState.data, locations, effectiveLocation],
+    [signedIn, managerState.data, locations, effectiveLocation],
   )
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>

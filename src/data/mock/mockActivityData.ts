@@ -22,11 +22,8 @@ export const mockActivity: ActivityEvent[] = [
   { id: 'evt_11', type: 'payment_received', locationId: 'loc_phl', occurredAt: minutesAgo(232), params: { amount: 45, reservationCode: 'SP-1035' } },
 ]
 
+/** Stored alerts. Camera, maintenance and occupancy alerts are derived from live state by the service. */
 export const mockAlerts: Alert[] = [
-  { id: 'alr_01', type: 'camera_offline', severity: 'critical', locationId: 'loc_phl', createdAt: minutesAgo(12), params: { cameraName: 'Gate B · Entrance' } },
-  { id: 'alr_02', type: 'high_occupancy', severity: 'warning', locationId: 'loc_dal', createdAt: minutesAgo(26), params: { percentage: 94 } },
   { id: 'alr_03', type: 'payment_issue', severity: 'critical', locationId: 'loc_njr', createdAt: minutesAgo(54), params: { reservationCode: 'SP-1038', amount: 55 } },
-  { id: 'alr_04', type: 'space_maintenance', severity: 'warning', locationId: 'loc_phl', createdAt: minutesAgo(130), params: { spaceNumber: 32 } },
-  { id: 'alr_hou', type: 'camera_offline', severity: 'warning', locationId: 'loc_hou', createdAt: minutesAgo(170), params: { cameraName: 'Level 2 · Ramp' } },
   { id: 'alr_05', type: 'reservation_conflict', severity: 'info', locationId: 'loc_dal', createdAt: minutesAgo(205), params: { reservationCode: 'SP-1047', spaceNumber: 18 } },
 ]

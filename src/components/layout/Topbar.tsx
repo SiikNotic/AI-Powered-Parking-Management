@@ -32,7 +32,7 @@ export function Topbar({ onOpenMenu }: TopbarProps) {
   const title = current ? t(`nav.${current.key}`) : t('app.name')
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-bg/80 backdrop-blur-md supports-[backdrop-filter]:bg-bg/70">
+    <header className="glass sticky top-0 z-30 rounded-none border-x-0 border-t-0 !shadow-none">
       <div className="mx-auto flex max-w-[1600px] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
         <IconButton label={t('nav.openMenu')} onClick={onOpenMenu} className="-ml-2 md:hidden">
           <Menu aria-hidden className="size-5" />

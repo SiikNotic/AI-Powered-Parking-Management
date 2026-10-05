@@ -71,7 +71,7 @@ export interface ParkingSpace {
   updatedAt: ISODateString
 }
 
-export type ReservationStatus = 'confirmed' | 'pending' | 'checked_in' | 'cancelled'
+export type ReservationStatus = 'confirmed' | 'pending' | 'checked_in' | 'completed' | 'cancelled'
 
 export interface Customer {
   id: ID
@@ -79,6 +79,15 @@ export interface Customer {
   email: string
   phone: string
   company?: string
+  createdAt?: ISODateString
+}
+
+/** Customer plus figures computed from their reservations. */
+export interface CustomerSummary extends Customer {
+  reservationCount: number
+  activeReservations: number
+  totalSpent: number
+  lastVisit?: ISODateString
 }
 
 export interface Reservation {
@@ -152,6 +161,11 @@ export type ActivityType =
   | 'check_in'
   | 'check_out'
   | 'payment_received'
+  | 'location_created'
+  | 'customer_created'
+  | 'space_maintenance'
+  | 'camera_offline'
+  | 'camera_online'
 
 export type ActivityTone = 'success' | 'info' | 'warning' | 'danger' | 'neutral'
 
@@ -169,6 +183,8 @@ export interface ActivityEvent {
     reservationCode?: string
     customerName?: string
     amount?: number
+    locationName?: string
+    cameraName?: string
   }
 }
 
@@ -183,6 +199,8 @@ export type AlertType =
 
 export interface Alert {
   id: ID
+  /** Computed from the current state (e.g. an offline camera); resolves itself when the cause is fixed. */
+  derived?: boolean
   type: AlertType
   severity: AlertSeverity
   locationId: ID
@@ -206,4 +224,67 @@ export interface Manager {
     id: ID
     name: string
   }
+}
+
+export type CameraStatus = 'online' | 'offline' | 'maintenance'
+
+export interface Camera {
+  id: ID
+  locationId: ID
+  name: string
+  /** What the camera covers, e.g. "Entrance" or "Zone B". */
+  coverage: string
+  status: CameraStatus
+  resolution: '720p' | '1080p' | '4K'
+  lastSeenAt: ISODateString
+}
+
+export interface AppSettings {
+  /** Raise a high-occupancy alert when a location reaches this share (0–100). */
+  occupancyAlertThreshold: number
+  emailAlerts: boolean
+  dailySummary: boolean
+}
+
+// ---------- Inputs for create / update operations ----------
+
+export interface LocationInput {
+  name: string
+  city: string
+  state: string
+  address: string
+  category: ParkingCategory
+  code: string
+  timezone: string
+}
+
+/** Optional spaces generated together with a new location. */
+export interface LocationSetup {
+  spaces: number
+  zones: number
+  price: number
+  priceUnit: PriceUnit
+}
+
+export type SpaceInput = Omit<ParkingSpace, 'id' | 'updatedAt'>
+
+export type CustomerInput = Omit<Customer, 'id' | 'createdAt'>
+
+export interface ReservationInput {
+  locationId: ID
+  spaceId: ID
+  customerId: ID
+  vehicleType: VehicleType
+  checkIn: ISODateString
+  checkOut: ISODateString
+  status: Extract<ReservationStatus, 'confirmed' | 'pending'>
+}
+
+export type CameraInput = Omit<Camera, 'id' | 'lastSeenAt'>
+
+export interface ManagerInput {
+  firstName: string
+  lastName: string
+  email: string
+  organizationName: string
 }

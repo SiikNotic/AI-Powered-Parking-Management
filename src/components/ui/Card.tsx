@@ -13,7 +13,7 @@ export function Card({ children, className, as: Tag = 'section', labelledBy }: C
     <Tag
       aria-labelledby={labelledBy}
       className={cn(
-        'rounded-card border border-border bg-surface shadow-card',
+        'glass rounded-card',
         'p-5 sm:p-6',
         className,
       )}

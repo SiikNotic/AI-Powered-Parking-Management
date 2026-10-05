@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'signature'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'signature' | 'danger'
 type Size = 'sm' | 'md'
 
 const base =
@@ -10,8 +10,9 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary: 'bg-ink text-text-inverse hover:opacity-90',
-  secondary: 'bg-surface-raised text-text border border-border hover:border-border-strong hover:bg-surface-hover',
+  secondary: 'bg-surface-hover text-text border border-glass-border hover:border-border-strong hover:bg-surface-raised',
   ghost: 'text-text-secondary hover:text-text hover:bg-surface-hover',
+  danger: 'bg-occupied text-white hover:brightness-110',
   signature: 'bg-signature text-white shadow-[0_6px_18px_-6px_rgba(236,79,143,0.55)] hover:brightness-105',
 }
 

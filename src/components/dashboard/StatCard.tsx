@@ -40,7 +40,7 @@ export const StatCard = memo(function StatCard({
 }: StatCardProps) {
   const DeltaIcon = !delta || delta.ratio === 0 ? Minus : delta.ratio > 0 ? ArrowUpRight : ArrowDownRight
   return (
-    <article className={cn('flex min-w-0 flex-col rounded-card border border-border bg-surface p-4 shadow-card sm:p-5', className)}>
+    <article className={cn('glass flex min-w-0 flex-col rounded-card p-4 sm:p-5', className)}>
       <div className="flex items-center justify-between gap-2">
         <h3 className="eyebrow truncate">{label}</h3>
         <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-xl', iconClassName)}>
@@ -84,7 +84,7 @@ export const StatCard = memo(function StatCard({
 
 export function StatCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('rounded-card border border-border bg-surface p-4 shadow-card sm:p-5', className)}>
+    <div className={cn('glass rounded-card p-4 sm:p-5', className)}>
       <div className="flex items-center justify-between">
         <Skeleton className="h-3 w-20" />
         <Skeleton className="size-8 rounded-xl" />

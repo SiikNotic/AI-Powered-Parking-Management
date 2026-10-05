@@ -3,6 +3,7 @@ import type { AsyncResult } from '@/hooks/useAsync'
 import type { LocationFilter, Manager, ParkingLocation } from '@/types'
 
 export interface SessionContextValue {
+  signedIn: boolean
   manager: Manager | undefined
   locations: AsyncResult<ParkingLocation[]>
   selectedLocation: LocationFilter

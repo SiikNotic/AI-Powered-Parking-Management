@@ -15,7 +15,7 @@ export function NotificationsMenu() {
   const fmt = useFormat()
   const navigate = useNavigate()
   const { selectedLocation } = useSession()
-  const alerts = useAsync(() => activityService.getAlerts(selectedLocation), [selectedLocation])
+  const alerts = useAsync(() => activityService.getAlerts(selectedLocation), [selectedLocation], ['alerts', 'cameras', 'spaces', 'settings'])
   const items = alerts.data ?? []
   const count = items.length
 

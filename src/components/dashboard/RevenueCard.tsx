@@ -8,10 +8,9 @@ import { useI18n } from '@/i18n'
 import { cn } from '@/lib/cn'
 import type { RevenuePoint, RevenueStats } from '@/types'
 
-const CHART_HEIGHT = 96
 
 /** 30 thin bars, today highlighted; hover/focus shows the exact amount. */
-const RevenueBars = memo(function RevenueBars({ daily, fmt }: { daily: RevenuePoint[]; fmt: Formatters }) {
+export const RevenueBars = memo(function RevenueBars({ daily, fmt, height = 96 }: { daily: RevenuePoint[]; fmt: Formatters; height?: number }) {
   const { t } = useI18n()
   const [active, setActive] = useState<number | null>(null)
   const max = Math.max(...daily.map((d) => d.amount), 1)
@@ -32,7 +31,7 @@ const RevenueBars = memo(function RevenueBars({ daily, fmt }: { daily: RevenuePo
         role="img"
         aria-label={t('dashboard.revenue.chartLabel', { total: fmt.currency(total) })}
         className="flex items-end gap-[3px]"
-        style={{ height: CHART_HEIGHT }}
+        style={{ height }}
         onPointerLeave={() => setActive(null)}
       >
         {daily.map((point, i) => {
