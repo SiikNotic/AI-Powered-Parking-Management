@@ -3,7 +3,7 @@
 Management platform for mushroom farms. It follows the whole cycle:
 **Production → Batches → Cultivation → Harvest → Weight → Processing/Packing → Inventory → Sale → Customer → Revenue → Expenses → Profit/Loss**.
 
-**Phase 1 (this release): the main farm dashboard.** It runs on generated **demo data**, and the architecture is ready to switch to real data in Supabase.
+**Phase 1: the main farm dashboard.** It runs on generated **demo data** by default and connects to **Supabase** (auth, RLS, Realtime) with `VITE_DATA_SOURCE=supabase`.
 
 ## What the dashboard shows
 
@@ -57,9 +57,29 @@ npm run lint
 
 `.env.example` lists the variables. `VITE_ROUTER=hash` is used for GitHub Pages (`.github/workflows/deploy-pages.yml` publishes on every push to `main`).
 
-## Connecting Supabase (next step)
+## Connecting Supabase
 
-1. Create the project and apply `supabase/migrations/*.sql`.
-2. Implement the interfaces in `src/services/contracts.ts` with `@supabase/supabase-js`, using **only the anon key and the user's session**. RLS restricts every query to the user's farms and role. **Never put a `service_role` key in the frontend.**
-3. Feed `changeFeed` from Supabase Realtime (`environmental_readings`, `alerts`, `harvests`, `inventory_movements`, `orders`).
-4. Set `VITE_DATA_SOURCE=supabase` and register the new services in `src/services/index.ts`.
+The Supabase implementation of every service lives in `src/services/supabase/`. It runs only with the **public anon/publishable key and the signed-in user's session**: RLS decides what each user can read and write. **Never put a `service_role` key in the frontend or in `VITE_*` variables.**
+
+1. **Schema**: apply `supabase/migrations/*.sql` in order. They create tables, RLS, append-only triggers, the audit trail, the Realtime publication, profile creation on sign-up, `create_farm()` and `ingest_reading()`.
+2. **Environment**: in `.env.local`:
+   ```
+   VITE_DATA_SOURCE=supabase
+   VITE_SUPABASE_URL=https://<project>.supabase.co
+   VITE_SUPABASE_ANON_KEY=<anon or publishable key>
+   ```
+3. **First run**: sign up in the app. With no farm yet, it asks you to create one and makes you its OWNER.
+4. **Demo data (optional)**:
+   - `npm run seed:sql` writes `supabase/seed/out/*.sql`. Run the files in order to load **Evergreen Mycology (demo)**.
+   - Add yourself as owner (`insert into farm_members …`, see the script header).
+   - `supabase/seed/demo_sensor_simulator.sql` schedules a pg_cron job that adds demo readings every 5 minutes, so you can see live updates.
+5. **Real sensors**:
+   - Register the sensor in `sensors`, then call `set_sensor_token(sensor_id, token)` as a manager.
+   - The device posts to `POST /rest/v1/rpc/ingest_reading` with the anon key, its `provider`, `external_id`, token and values.
+   - Tokens are stored only as bcrypt hashes in a table no client can read.
+
+How it works:
+- **Realtime**: one channel per farm. Readings stream into the room cards and charts. Changes to harvests, movements, orders, expenses, batches and alerts refresh the dashboard.
+- **Same numbers in demo and live**: both modes build the snapshot and alerts with the same shared functions (`services/shared`).
+- **Alert status** is stored in `alerts` by cause key, and every change is audited.
+- **Dashboard layout** is stored per user in `user_preferences`.

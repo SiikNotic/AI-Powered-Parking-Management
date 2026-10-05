@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Generated demo seed SQL
+supabase/seed/out

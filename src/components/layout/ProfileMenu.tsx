@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Languages, Moon, Settings, Sun } from 'lucide-react'
+import { Check, ChevronDown, Languages, LogOut, Moon, Settings, Sun } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/Badge'
 import { MenuItem, Popover } from '@/components/ui/Popover'
@@ -7,14 +7,13 @@ import { ROLES } from '@/domain/permissions'
 import { useTheme } from '@/context/theme'
 import { locales, useI18n, type Locale } from '@/i18n'
 import { cn } from '@/lib/cn'
-import { isDemoData } from '@/services'
 import { Avatar } from './Avatar'
 
 export function ProfileMenu() {
   const { t, locale, setLocale } = useI18n()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
-  const { user, setRole } = useSession()
+  const { user, setRole, canSwitchRole, signOut } = useSession()
 
   return (
     <Popover
@@ -48,7 +47,7 @@ export function ProfileMenu() {
               </Badge>
             </div>
           </div>
-          {isDemoData && (
+          {canSwitchRole && (
             <>
               <div className="my-1 border-t border-border" />
               <p className="eyebrow px-3 pb-1 pt-1.5">{t('topbar.viewAs')}</p>
@@ -89,6 +88,17 @@ export function ProfileMenu() {
             <Settings aria-hidden className="size-4 text-text-muted" />
             {t('modules.settings.name')}
           </MenuItem>
+          {!canSwitchRole && (
+            <MenuItem
+              onSelect={() => {
+                close()
+                signOut()
+              }}
+            >
+              <LogOut aria-hidden className="size-4 text-text-muted" />
+              {t('auth.signOut')}
+            </MenuItem>
+          )}
         </>
       )}
     </Popover>

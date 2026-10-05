@@ -76,21 +76,6 @@ export const demoSensorProvider: SensorProvider = {
   },
 }
 
-/** Synchronous access for other demo services (alerts). */
-export function latestReadings(farmId: string): EnvironmentalReading[] {
-  return [...feed(farmId).history.values()].map((list) => list[list.length - 1]).filter(Boolean)
-}
-
-export function readingNear(farmId: string, roomId: string, iso: string): EnvironmentalReading | null {
-  const list = feed(farmId).history.get(roomId) ?? []
-  let best: EnvironmentalReading | null = null
-  for (const r of list) {
-    if (r.timestamp > iso) break
-    best = r
-  }
-  return best
-}
-
 export function roomHistory(farmId: string, roomId: string): EnvironmentalReading[] {
   return feed(farmId).history.get(roomId) ?? []
 }

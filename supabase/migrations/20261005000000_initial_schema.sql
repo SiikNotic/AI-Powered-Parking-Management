@@ -83,13 +83,18 @@ create table mushroom_species (
   farm_id uuid not null references farms (id) on delete cascade,
   name text not null,
   scientific_name text,
-  incubation_temp numrange,
-  fruiting_temp numrange,
-  humidity numrange,
-  co2 numrange,
+  incubation_temp_min numeric(5, 1),
+  incubation_temp_max numeric(5, 1),
+  fruiting_temp_min numeric(5, 1),
+  fruiting_temp_max numeric(5, 1),
+  humidity_min numeric(5, 1),
+  humidity_max numeric(5, 1),
+  co2_min int,
+  co2_max int,
   average_yield numeric(5, 3) not null check (average_yield >= 0),
   average_grow_days int not null check (average_grow_days > 0),
-  shelf_life_days int not null check (shelf_life_days > 0)
+  shelf_life_days int not null check (shelf_life_days > 0),
+  color_index int not null default 0
 );
 
 create table grow_rooms (
@@ -97,9 +102,13 @@ create table grow_rooms (
   farm_id uuid not null references farms (id) on delete cascade,
   name text not null,
   type room_type not null,
-  target_temperature numrange not null,
-  target_humidity numrange not null,
-  target_co2 numrange not null
+  target_temp_min numeric(5, 1) not null,
+  target_temp_max numeric(5, 1) not null,
+  target_humidity_min numeric(5, 1) not null,
+  target_humidity_max numeric(5, 1) not null,
+  target_co2_min int not null,
+  target_co2_max int not null,
+  check (target_temp_min <= target_temp_max and target_humidity_min <= target_humidity_max and target_co2_min <= target_co2_max)
 );
 
 -- Hardware-agnostic: any vendor or gateway can register a sensor.

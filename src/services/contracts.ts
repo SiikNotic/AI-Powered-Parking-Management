@@ -24,16 +24,30 @@ import type {
   SaleChannel,
 } from '@/types'
 
+export interface Membership {
+  farmId: ID
+  role: Role
+}
+
 export interface Session {
   user: AppUser
   /** Only the farms the user is a member of. */
   farms: Farm[]
+  /** The user's role on each farm (roles are per farm). */
+  memberships: Membership[]
 }
 
 export interface AuthService {
-  getSession(): Promise<Session>
+  /** null when nobody is signed in. */
+  getSession(): Promise<Session | null>
+  signIn(email: string, password: string): Promise<void>
+  /** Returns true when the email must be confirmed before signing in. */
+  signUp(email: string, password: string, fullName: string): Promise<boolean>
+  signOut(): Promise<void>
+  /** Creates a farm owned by the signed-in user. */
+  createFarm(name: string, location: string): Promise<void>
   /** Demo only: preview the dashboard as another role. */
-  setRole(role: Role): Promise<Session>
+  setRole?(role: Role): Promise<void>
 }
 
 export interface Metric<T = number> {
@@ -148,6 +162,9 @@ export interface WidgetPreference {
 }
 
 export interface PreferencesService {
+  /** Synchronous read from the local cache (instant first paint). */
   getDashboardLayout(userId: ID): WidgetPreference[]
   saveDashboardLayout(userId: ID, layout: WidgetPreference[]): void
+  /** Refreshes the local cache from the server, when there is one. */
+  hydrate?(userId: ID): Promise<void>
 }

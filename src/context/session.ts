@@ -8,7 +8,10 @@ export interface SessionContextValue {
   farm: Farm
   setFarmId: (id: string) => void
   can: (permission: Permission) => boolean
+  /** Demo only: preview another role. */
   setRole: (role: Role) => void
+  canSwitchRole: boolean
+  signOut: () => void
 }
 
 export const SessionContext = createContext<SessionContextValue | null>(null)

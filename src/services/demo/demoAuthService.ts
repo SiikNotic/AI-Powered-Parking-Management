@@ -19,11 +19,17 @@ function storedRole(): Role {
 function session(): Session {
   const user = { ...demoUser, role: storedRole() }
   // Same rule RLS applies: a user only sees farms they are a member of.
-  return { user, farms: demoFarms.filter((f) => user.farmIds.includes(f.id)) }
+  const farms = demoFarms.filter((f) => user.farmIds.includes(f.id))
+  return { user, farms, memberships: farms.map((f) => ({ farmId: f.id, role: user.role })) }
 }
 
 export const demoAuthService: AuthService = {
   getSession: () => delay(session(), 120),
+  // The demo has a single signed-in user and fixed farms.
+  signIn: async () => undefined,
+  signUp: async () => false,
+  signOut: async () => undefined,
+  createFarm: async () => undefined,
   async setRole(role) {
     try {
       localStorage.setItem(ROLE_KEY, role)
@@ -31,6 +37,5 @@ export const demoAuthService: AuthService = {
       /* ignore */
     }
     changeFeed.publish('session')
-    return session()
   },
 }
