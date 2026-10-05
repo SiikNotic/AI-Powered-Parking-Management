@@ -64,11 +64,10 @@ export function Sidebar({ compact, inDrawer = false, onToggleCollapse, onClose }
                 {items.map((item) => {
                   const label = t(`modules.${item.id}.name`)
                   const Icon = item.icon
-                  const soon = item.phase !== undefined
                   return (
                     <li key={item.id}>
                       {withTooltip(
-                        soon ? `${label} · ${t('nav.soon')}` : label,
+                        label,
                         <NavLink
                           to={item.path}
                           end
@@ -78,19 +77,12 @@ export function Sidebar({ compact, inDrawer = false, onToggleCollapse, onClose }
                             cn(
                               'group flex h-9 items-center gap-3 rounded-lg text-[0.8125rem] font-medium transition-colors',
                               compact ? 'mx-auto w-10 justify-center' : 'w-full px-3',
-                              isActive ? 'bg-brand text-text-inverse' : soon ? 'text-text-muted hover:bg-surface-hover hover:text-text' : 'text-text-secondary hover:bg-surface-hover hover:text-text',
+                              isActive ? 'bg-brand text-text-inverse shadow-sm' : 'text-text-secondary hover:bg-surface-hover hover:text-text',
                             )
                           }
                         >
-                          {({ isActive }) => (
-                            <>
-                              <Icon aria-hidden className="size-[1.0625rem] shrink-0" strokeWidth={1.8} />
-                              {!compact && <span className="min-w-0 flex-1 truncate">{label}</span>}
-                              {!compact && soon && !isActive && (
-                                <span className="rounded-md border border-border px-1.5 py-px text-[0.625rem] font-semibold uppercase tracking-wide text-text-muted">{t('nav.soon')}</span>
-                              )}
-                            </>
-                          )}
+                          <Icon aria-hidden className="size-[1.0625rem] shrink-0" strokeWidth={1.8} />
+                          {!compact && <span className="min-w-0 flex-1 truncate">{label}</span>}
                         </NavLink>,
                       )}
                     </li>

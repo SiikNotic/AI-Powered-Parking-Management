@@ -1,4 +1,4 @@
-export type ServiceErrorCode = 'not_found' | 'forbidden' | 'network' | 'invalid'
+export type ServiceErrorCode = 'not_found' | 'forbidden' | 'network' | 'invalid' | 'insufficient_stock' | 'closed' | 'duplicate'
 
 export class ServiceError extends Error {
   readonly code: ServiceErrorCode

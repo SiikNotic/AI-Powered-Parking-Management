@@ -19,7 +19,7 @@ export function Topbar({ onOpenMenu }: TopbarProps) {
   const { t } = useI18n()
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-bg/90 backdrop-blur-md">
+    <header className="panel sticky top-0 z-30 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1680px] items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-6 lg:px-8">
         <IconButton label={t('nav.openMenu')} onClick={onOpenMenu} className="-ml-1 md:hidden">
           <Menu aria-hidden className="size-5" />

@@ -4,6 +4,7 @@
  * Never put a service_role key in frontend code or VITE_* variables.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { ServiceError } from '../errors'
 
 let client: SupabaseClient | null = null
 
@@ -28,4 +29,17 @@ export async function fetchAll<T>(page: (from: number, to: number) => PromiseLik
     rows.push(...(data ?? []))
     if (!data || data.length < PAGE) return rows
   }
+}
+
+/** Maps database errors (RLS, business rules, constraints) to service errors. */
+export function fail(error: { message: string; code?: string } | null): void {
+  if (!error) return
+  const { code, message } = error
+  if (code === 'P0003' || /insufficient stock/i.test(message)) throw new ServiceError('insufficient_stock', message)
+  if (code === 'P0001' && /closed/i.test(message)) throw new ServiceError('closed', message)
+  if (code === 'P0002' || code === 'PGRST116') throw new ServiceError('not_found', message)
+  if (code === '23505') throw new ServiceError('duplicate', message)
+  if (code === '42501' || /permission|not allowed|row-level security/i.test(message)) throw new ServiceError('forbidden', message)
+  if (code?.startsWith('22') || code?.startsWith('23') || code === 'P0001') throw new ServiceError('invalid', message)
+  throw new ServiceError('network', message)
 }

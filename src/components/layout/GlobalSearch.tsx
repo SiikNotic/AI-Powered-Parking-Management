@@ -105,7 +105,7 @@ function SearchBox({ autoFocus, onDone, inputRef }: SearchBoxProps) {
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        className="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-14 text-sm text-text placeholder:text-text-muted transition-colors hover:border-border-strong focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 [&::-webkit-search-cancel-button]:hidden"
+        className="h-10 w-full tile rounded-xl pl-9 pr-14 text-sm text-text placeholder:text-text-muted transition-colors hover:border-border-strong focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 [&::-webkit-search-cancel-button]:hidden"
       />
       <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-border px-1.5 py-0.5 text-[0.625rem] font-semibold text-text-muted lg:block">
         Ctrl K

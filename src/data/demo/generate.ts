@@ -29,6 +29,7 @@ import type {
   OrderItem,
   OrderStatus,
   ProductionBatch,
+  Supplier,
 } from '@/types'
 import { CUSTOMERS, EQUIPMENT, EXPENSES, PRODUCTS, ROOMS, SPECIES, STAFF } from './catalog'
 import { createRandom, round } from './random'
@@ -50,6 +51,7 @@ export interface FarmDataset {
   tasks: FarmTask[]
   equipment: Equipment[]
   readings: EnvironmentalReading[]
+  suppliers: Supplier[]
   audit: AuditEntry[]
   generatedAt: string
 }
@@ -588,8 +590,15 @@ export function generateFarm({ farm, seed, scale }: Options): FarmDataset {
   ]
   const audit = auditEntries.filter((a) => isPast(new Date(a.date))).sort((a, b) => b.date.localeCompare(a.date))
 
+  const suppliers: Supplier[] = [...new Set([...Object.values(vendors), ...EXPENSES.map((e) => e.vendor)])]
+    .filter((v) => v !== 'Payroll')
+    .map((name) => ({ id: rnd.uuid(), farmId: farm.id, name, email: `orders@${name.toLowerCase().replace(/[^a-z]/g, '')}.example`, phone: `+1 717 555 0${rnd.int(300, 399)}` }))
+  const supplierByName = new Map(suppliers.map((sp) => [sp.name, sp.id]))
+  for (const e of expenses) e.supplierId = supplierByName.get(e.vendor) ?? null
+
   return {
     farm,
+    suppliers,
     species,
     rooms,
     locations,

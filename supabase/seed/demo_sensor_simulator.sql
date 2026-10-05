@@ -19,7 +19,7 @@ begin
       select temperature, humidity, co2 from environmental_readings er
       where er.sensor_id = se.id order by recorded_at desc limit 1
     ) r on true
-    where se.provider = 'demo' and se.external_id <> 'SNS-PROCESSING'
+    where se.provider = 'demo' and se.external_id not like '%SNS-PROCESSING'
   loop
     insert into environmental_readings (farm_id, room_id, sensor_id, recorded_at, temperature, humidity, co2)
     values (

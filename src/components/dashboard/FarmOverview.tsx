@@ -29,7 +29,7 @@ function RoomTile({ env, history, selected, onSelect }: { env: RoomEnvironment; 
       aria-pressed={selected}
       className={cn(
         'flex min-w-0 flex-col rounded-xl border p-3 text-left transition-colors',
-        selected ? 'border-brand bg-brand-soft/40 ring-1 ring-brand' : 'border-border bg-surface hover:border-border-strong',
+        selected ? 'border-brand bg-brand-soft/60 ring-1 ring-brand' : 'tile hover:border-border-strong',
         env.status === 'offline' && 'bg-surface-2',
       )}
     >

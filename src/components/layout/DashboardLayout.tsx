@@ -89,11 +89,11 @@ export function DashboardLayout() {
       {/* Tablet / desktop rail */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 hidden border-r border-border bg-surface transition-[width] duration-200 md:block',
-          compact ? 'w-[4.5rem]' : 'w-[16rem]',
+          'fixed inset-y-0 left-0 z-40 hidden p-3 transition-[width] duration-200 md:block',
+          compact ? 'w-[5.25rem]' : 'w-[17rem]',
         )}
       >
-        <div className="h-full px-3 pb-3">
+        <div className="panel h-full rounded-[1.5rem] px-3 pb-3">
           <Sidebar compact={compact} onToggleCollapse={isDesktop ? toggleCollapsed : undefined} />
         </div>
       </aside>
@@ -120,7 +120,7 @@ export function DashboardLayout() {
       <div
         className={cn(
           'flex min-h-dvh min-w-0 flex-col transition-[padding] duration-200',
-          compact ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]',
+          compact ? 'md:pl-[5.25rem]' : 'md:pl-[17rem]',
         )}
       >
         <Topbar onOpenMenu={() => setDrawerOpen(true)} />

@@ -6,7 +6,9 @@
  * user's session — RLS decides what each user can read and write. Never use a
  * service_role key in the frontend.
  */
-import type { AlertService, AuthService, DashboardService, PreferencesService, SearchService, SensorProvider } from './contracts'
+import type { AlertService, AuthService, CommandService, DashboardService, FarmDataService, PreferencesService, SearchService, SensorProvider } from './contracts'
+import { demoCommandService, demoFarmDataService } from './demo/demoFarmData'
+import { supabaseCommandService } from './supabase/commands'
 import { demoAlertService } from './demo/demoAlertService'
 import { demoAuthService } from './demo/demoAuthService'
 import { demoDashboardService } from './demo/demoDashboardService'
@@ -17,6 +19,7 @@ import {
   supabaseAlertService,
   supabaseAuthService,
   supabaseDashboardService,
+  supabaseFarmDataService,
   supabasePreferencesService,
   supabaseSearchService,
   supabaseSensorProvider,
@@ -39,3 +42,5 @@ export const sensorProvider: SensorProvider = live ? supabaseSensorProvider : de
 export const alertService: AlertService = live ? supabaseAlertService : demoAlertService
 export const searchService: SearchService = live ? supabaseSearchService : demoSearchService
 export const preferencesService: PreferencesService = live ? supabasePreferencesService : demoPreferencesService
+export const farmDataService: FarmDataService = live ? supabaseFarmDataService : demoFarmDataService
+export const commands: CommandService = live ? supabaseCommandService : demoCommandService

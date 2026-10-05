@@ -45,28 +45,26 @@ export interface ModuleDef {
   path: string
   icon: LucideIcon
   permission?: Permission
-  /** Planned delivery order after the dashboard (1 = next). */
-  phase?: number
 }
 
 export const MODULES: Record<ModuleId, ModuleDef> = {
   dashboard: { id: 'dashboard', path: '/', icon: LayoutDashboard },
-  production: { id: 'production', path: '/production', icon: Sprout, permission: 'production.view', phase: 1 },
-  batches: { id: 'batches', path: '/batches', icon: FlaskConical, permission: 'production.view', phase: 2 },
-  harvest: { id: 'harvest', path: '/harvest', icon: Wheat, permission: 'production.view', phase: 3 },
-  inventory: { id: 'inventory', path: '/inventory', icon: Boxes, permission: 'inventory.view', phase: 4 },
-  products: { id: 'products', path: '/products', icon: Package, permission: 'inventory.view', phase: 5 },
-  customers: { id: 'customers', path: '/customers', icon: Users, permission: 'sales.view', phase: 6 },
-  orders: { id: 'orders', path: '/orders', icon: ClipboardList, permission: 'sales.view', phase: 7 },
-  sales: { id: 'sales', path: '/sales', icon: ShoppingCart, permission: 'sales.view', phase: 8 },
-  expenses: { id: 'expenses', path: '/expenses', icon: Receipt, permission: 'finance.view', phase: 9 },
-  profitLoss: { id: 'profitLoss', path: '/profit-loss', icon: CircleDollarSign, permission: 'finance.view', phase: 10 },
-  environment: { id: 'environment', path: '/environment', icon: Thermometer, permission: 'environment.view', phase: 11 },
-  suppliers: { id: 'suppliers', path: '/suppliers', icon: Truck, permission: 'inventory.view', phase: 12 },
-  employees: { id: 'employees', path: '/employees', icon: UserSquare2, permission: 'farms.manage', phase: 13 },
-  equipment: { id: 'equipment', path: '/equipment', icon: Wrench, permission: 'environment.view', phase: 14 },
-  reports: { id: 'reports', path: '/reports', icon: FileBarChart, permission: 'finance.view', phase: 15 },
-  settings: { id: 'settings', path: '/settings', icon: Cog, phase: 16 },
+  production: { id: 'production', path: '/production', icon: Sprout, permission: 'production.view' },
+  batches: { id: 'batches', path: '/batches', icon: FlaskConical, permission: 'production.view' },
+  harvest: { id: 'harvest', path: '/harvest', icon: Wheat, permission: 'production.view' },
+  inventory: { id: 'inventory', path: '/inventory', icon: Boxes, permission: 'inventory.view' },
+  products: { id: 'products', path: '/products', icon: Package, permission: 'inventory.view' },
+  customers: { id: 'customers', path: '/customers', icon: Users, permission: 'sales.view' },
+  orders: { id: 'orders', path: '/orders', icon: ClipboardList, permission: 'sales.view' },
+  sales: { id: 'sales', path: '/sales', icon: ShoppingCart, permission: 'sales.view' },
+  expenses: { id: 'expenses', path: '/expenses', icon: Receipt, permission: 'finance.view' },
+  profitLoss: { id: 'profitLoss', path: '/profit-loss', icon: CircleDollarSign, permission: 'finance.view' },
+  environment: { id: 'environment', path: '/environment', icon: Thermometer, permission: 'environment.view' },
+  suppliers: { id: 'suppliers', path: '/suppliers', icon: Truck, permission: 'inventory.view' },
+  employees: { id: 'employees', path: '/employees', icon: UserSquare2, permission: 'farms.manage' },
+  equipment: { id: 'equipment', path: '/equipment', icon: Wrench, permission: 'environment.view' },
+  reports: { id: 'reports', path: '/reports', icon: FileBarChart, permission: 'finance.view' },
+  settings: { id: 'settings', path: '/settings', icon: Cog },
 }
 
 export interface NavGroup {

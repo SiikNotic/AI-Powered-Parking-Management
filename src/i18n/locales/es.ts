@@ -1,4 +1,20 @@
 import type { Translations } from './en'
+import productionPage from './pages/production'
+import batchesPage from './pages/batches'
+import harvestPage from './pages/harvest'
+import inventoryPage from './pages/inventory'
+import productsPage from './pages/products'
+import customersPage from './pages/customers'
+import ordersPage from './pages/orders'
+import salesPage from './pages/sales'
+import expensesPage from './pages/expenses'
+import profitLossPage from './pages/profitLoss'
+import environmentPage from './pages/environment'
+import suppliersPage from './pages/suppliers'
+import employeesPage from './pages/employees'
+import equipmentPage from './pages/equipment'
+import reportsPage from './pages/reports'
+import settingsPage from './pages/settings'
 
 const es: Translations = {
   app: {
@@ -427,6 +443,68 @@ const es: Translations = {
     note: 'Primero se entrega el dashboard. El modelo de datos, permisos y tablas de este módulo ya están listos.',
     back: 'Volver al dashboard',
   },
+  pages: {
+    production: productionPage.es,
+    batches: batchesPage.es,
+    harvest: harvestPage.es,
+    inventory: inventoryPage.es,
+    products: productsPage.es,
+    customers: customersPage.es,
+    orders: ordersPage.es,
+    sales: salesPage.es,
+    expenses: expensesPage.es,
+    profitLoss: profitLossPage.es,
+    environment: environmentPage.es,
+    suppliers: suppliersPage.es,
+    employees: employeesPage.es,
+    equipment: equipmentPage.es,
+    reports: reportsPage.es,
+    settings: settingsPage.es,
+  },
+  form: {
+    optional: 'opcional',
+    save: 'Guardar',
+    saving: 'Guardando…',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+    create: 'Crear',
+    edit: 'Editar',
+    add: 'Agregar',
+    required: 'Obligatorio',
+    invalidNumber: 'Escribe un número válido',
+    reason: 'Motivo',
+    notes: 'Notas',
+    saved: 'Guardado',
+  },
+  table: {
+    search: 'Buscar…',
+    clearSearch: 'Borrar búsqueda',
+    all: 'Todos',
+    empty: 'Aún no hay nada aquí',
+    noMatches: 'Ningún resultado coincide con estos filtros',
+    range: '{from}–{to} de {total}',
+    previous: 'Página anterior',
+    next: 'Página siguiente',
+    actions: 'Acciones',
+    exportCsv: 'Exportar CSV',
+  },
+  labels: {
+    productCategory: { fresh: 'Fresco', dried: 'Deshidratado', powder: 'Polvo', kit: 'Kit de cultivo', spawn: 'Spawn', substrate: 'Sustrato', packaging: 'Empaque', supplies: 'Insumos' },
+    unit: { lb: 'lb', oz: 'oz', unit: 'ud.' },
+    movementType: { RECEIVED: 'Recibido', PRODUCED: 'Producido', HARVESTED: 'Cosechado', PACKED: 'Empacado', SOLD: 'Vendido', DAMAGED: 'Dañado', WASTED: 'Merma', ADJUSTMENT: 'Ajuste', TRANSFERRED: 'Transferido' },
+    expenseCategory: { substrate: 'Sustrato', spawn: 'Spawn', electricity: 'Electricidad', water: 'Agua', rent: 'Renta', labor: 'Mano de obra', packaging: 'Empaque', transportation: 'Transporte', equipment: 'Equipos', maintenance: 'Mantenimiento', marketing: 'Marketing', insurance: 'Seguros', other: 'Otros' },
+    customerType: { wholesale: 'Mayorista', restaurant: 'Restaurante', retail: 'Tienda', individual: 'Particular', distributor: 'Distribuidor' },
+    paymentMethod: { card: 'Tarjeta', cash: 'Efectivo', transfer: 'Transferencia', invoice: 'Factura' },
+    paymentTerms: { due_on_receipt: 'Al recibir', net_15: 'Neto 15', net_30: 'Neto 30' },
+    fulfillment: { pickup: 'Retiro', delivery: 'Entrega' },
+    grade: { A: 'Calidad A', B: 'Calidad B', C: 'Calidad C' },
+    staffRole: { farm_manager: 'Gerente de granja', grower: 'Cultivador', harvester: 'Cosechador', packing: 'Empaque', sales: 'Ventas', delivery: 'Reparto' },
+    equipmentKind: { humidifier: 'Humidificador', hvac: 'HVAC', fan: 'Ventilador', sensor: 'Sensor', fridge: 'Cámara fría', scale: 'Balanza', sealer: 'Selladora' },
+    equipmentStatus: { operational: 'Operativo', maintenance_due: 'Mantenimiento pendiente', offline: 'Fuera de servicio' },
+    locationKind: { grow_room: 'Salas de cultivo', cold_storage: 'Cámara fría', warehouse: 'Almacén', packing: 'Empaque', retail: 'Tienda', vehicle: 'Vehículo' },
+    active: 'Activo',
+    inactive: 'Inactivo',
+  },
   common: {
     close: 'Cerrar',
     done: 'Listo',
@@ -445,6 +523,9 @@ const es: Translations = {
     forbidden: 'Tu rol no permite esta acción.',
     network: 'Problema de conexión. Revisa tu red e inténtalo de nuevo.',
     invalid: 'Algunos valores no son válidos.',
+    insufficient_stock: 'No hay stock suficiente para este cambio. Si el conteo está mal, usa un ajuste con motivo.',
+    closed: 'Este registro está cerrado y no se puede cambiar.',
+    duplicate: 'Ya existe un registro con este código.',
   },
   time: {
     justNow: 'justo ahora',

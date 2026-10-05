@@ -3,6 +3,24 @@
  * enforced by the `Translations` type below.
  * Placeholders use `{name}` syntax.
  */
+import type { DeepStringify } from './types'
+import productionPage from './pages/production'
+import batchesPage from './pages/batches'
+import harvestPage from './pages/harvest'
+import inventoryPage from './pages/inventory'
+import productsPage from './pages/products'
+import customersPage from './pages/customers'
+import ordersPage from './pages/orders'
+import salesPage from './pages/sales'
+import expensesPage from './pages/expenses'
+import profitLossPage from './pages/profitLoss'
+import environmentPage from './pages/environment'
+import suppliersPage from './pages/suppliers'
+import employeesPage from './pages/employees'
+import equipmentPage from './pages/equipment'
+import reportsPage from './pages/reports'
+import settingsPage from './pages/settings'
+
 const en = {
   app: {
     name: 'Mushroom Farm Manager',
@@ -430,6 +448,68 @@ const en = {
     note: 'The dashboard ships first. This module’s data model, permissions and database tables are already in place.',
     back: 'Back to dashboard',
   },
+  pages: {
+    production: productionPage.en,
+    batches: batchesPage.en,
+    harvest: harvestPage.en,
+    inventory: inventoryPage.en,
+    products: productsPage.en,
+    customers: customersPage.en,
+    orders: ordersPage.en,
+    sales: salesPage.en,
+    expenses: expensesPage.en,
+    profitLoss: profitLossPage.en,
+    environment: environmentPage.en,
+    suppliers: suppliersPage.en,
+    employees: employeesPage.en,
+    equipment: equipmentPage.en,
+    reports: reportsPage.en,
+    settings: settingsPage.en,
+  },
+  form: {
+    optional: 'optional',
+    save: 'Save',
+    saving: 'Saving…',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    create: 'Create',
+    edit: 'Edit',
+    add: 'Add',
+    required: 'Required',
+    invalidNumber: 'Enter a valid number',
+    reason: 'Reason',
+    notes: 'Notes',
+    saved: 'Saved',
+  },
+  table: {
+    search: 'Search…',
+    clearSearch: 'Clear search',
+    all: 'All',
+    empty: 'Nothing here yet',
+    noMatches: 'No results match these filters',
+    range: '{from}–{to} of {total}',
+    previous: 'Previous page',
+    next: 'Next page',
+    actions: 'Actions',
+    exportCsv: 'Export CSV',
+  },
+  labels: {
+    productCategory: { fresh: 'Fresh', dried: 'Dried', powder: 'Powder', kit: 'Grow kit', spawn: 'Spawn', substrate: 'Substrate', packaging: 'Packaging', supplies: 'Supplies' },
+    unit: { lb: 'lb', oz: 'oz', unit: 'unit' },
+    movementType: { RECEIVED: 'Received', PRODUCED: 'Produced', HARVESTED: 'Harvested', PACKED: 'Packed', SOLD: 'Sold', DAMAGED: 'Damaged', WASTED: 'Wasted', ADJUSTMENT: 'Adjustment', TRANSFERRED: 'Transferred' },
+    expenseCategory: { substrate: 'Substrate', spawn: 'Spawn', electricity: 'Electricity', water: 'Water', rent: 'Rent', labor: 'Labor', packaging: 'Packaging', transportation: 'Transportation', equipment: 'Equipment', maintenance: 'Maintenance', marketing: 'Marketing', insurance: 'Insurance', other: 'Other' },
+    customerType: { wholesale: 'Wholesale', restaurant: 'Restaurant', retail: 'Retail', individual: 'Individual', distributor: 'Distributor' },
+    paymentMethod: { card: 'Card', cash: 'Cash', transfer: 'Transfer', invoice: 'Invoice' },
+    paymentTerms: { due_on_receipt: 'Due on receipt', net_15: 'Net 15', net_30: 'Net 30' },
+    fulfillment: { pickup: 'Pickup', delivery: 'Delivery' },
+    grade: { A: 'Grade A', B: 'Grade B', C: 'Grade C' },
+    staffRole: { farm_manager: 'Farm manager', grower: 'Grower', harvester: 'Harvester', packing: 'Packing', sales: 'Sales', delivery: 'Delivery' },
+    equipmentKind: { humidifier: 'Humidifier', hvac: 'HVAC', fan: 'Fan', sensor: 'Sensor', fridge: 'Cooler', scale: 'Scale', sealer: 'Sealer' },
+    equipmentStatus: { operational: 'Operational', maintenance_due: 'Maintenance due', offline: 'Offline' },
+    locationKind: { grow_room: 'Grow rooms', cold_storage: 'Cold storage', warehouse: 'Warehouse', packing: 'Packing', retail: 'Retail', vehicle: 'Vehicle' },
+    active: 'Active',
+    inactive: 'Inactive',
+  },
   common: {
     close: 'Close',
     done: 'Done',
@@ -448,6 +528,9 @@ const en = {
     forbidden: 'Your role doesn’t allow this action.',
     network: 'Connection problem. Check your network and try again.',
     invalid: 'Some values are not valid.',
+    insufficient_stock: 'Not enough stock for this change. Use an adjustment with a reason if the count is wrong.',
+    closed: 'This record is closed and can’t be changed.',
+    duplicate: 'A record with this code already exists.',
   },
   time: {
     justNow: 'just now',
@@ -462,7 +545,6 @@ const en = {
   },
 }
 
-type DeepStringify<T> = { [K in keyof T]: T[K] extends string ? string : DeepStringify<T[K]> }
 
 export type Translations = DeepStringify<typeof en>
 

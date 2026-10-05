@@ -14,7 +14,8 @@ export function useErrorMessage() {
 
 /**
  * Runs a write operation with a pending flag, shows a success toast and
- * turns service errors into translated messages.
+ * turns service errors into translated messages. `run` resolves to
+ * `{ ok: true, value }` or `{ ok: false }` (the error is already shown).
  */
 export function useMutation<Args extends unknown[], R>(action: (...args: Args) => Promise<R>) {
   const toast = useToast()
@@ -23,18 +24,18 @@ export function useMutation<Args extends unknown[], R>(action: (...args: Args) =
   const [error, setError] = useState<string | null>(null)
 
   const run = useCallback(
-    async (args: Args, successMessage?: string): Promise<R | undefined> => {
+    async (args: Args, successMessage?: string): Promise<{ ok: true; value: R } | { ok: false }> => {
       setPending(true)
       setError(null)
       try {
-        const result = await action(...args)
+        const value = await action(...args)
         if (successMessage) toast.show(successMessage)
-        return result
+        return { ok: true, value }
       } catch (err) {
         const text = message(err)
         setError(text)
         toast.show(text, 'error')
-        return undefined
+        return { ok: false }
       } finally {
         setPending(false)
       }

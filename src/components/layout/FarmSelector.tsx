@@ -20,7 +20,7 @@ export function FarmSelector({ className }: { className?: string }) {
           {...props}
           type="button"
           aria-label={`${t('topbar.farm')}: ${farm.name}`}
-          className="flex h-10 w-full min-w-0 items-center gap-2.5 rounded-xl border border-border bg-surface px-2.5 text-left transition-colors hover:border-border-strong"
+          className="flex h-10 w-full min-w-0 items-center gap-2.5 tile rounded-xl px-2.5 text-left transition-colors hover:border-border-strong"
         >
           <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand-ink">
             <Warehouse aria-hidden className="size-4" strokeWidth={1.8} />

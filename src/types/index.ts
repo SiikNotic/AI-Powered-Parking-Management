@@ -263,9 +263,38 @@ export interface Expense {
   date: ISODate
   category: ExpenseCategory
   description: string
+  /** Negative for a correction. */
   amount: number
   vendor: string
   paymentMethod: PaymentMethod
+  supplierId?: ID | null
+  /** Set when this record corrects (reverses) another expense. */
+  correctsId?: ID | null
+}
+
+export interface Supplier {
+  id: ID
+  farmId: ID
+  name: string
+  email: string
+  phone: string
+}
+
+/** A user with access to a farm (farm_members). */
+export interface Member {
+  userId: ID
+  name: string
+  email: string
+  role: Role
+}
+
+export interface Sensor {
+  id: ID
+  farmId: ID
+  roomId: ID
+  provider: string
+  externalId: string
+  lastSeenAt: ISODate | null
 }
 
 // ---------- Operations ----------

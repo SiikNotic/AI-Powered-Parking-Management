@@ -6,7 +6,7 @@
  * Next step: move heavy aggregates (stock, P&L) into SQL views/RPCs so the
  * browser downloads totals instead of history.
  */
-import type { FarmRecords } from '../shared/records'
+import type { FarmData } from '../shared/records'
 import { fetchAll, supabase } from './client'
 import {
   toAudit,
@@ -23,6 +23,16 @@ import {
   toSpecies,
   toTask,
   type AuditRow,
+  toCustomer,
+  toLocation,
+  toMember,
+  toSensor,
+  toSupplier,
+  type CustomerRow,
+  type LocationRow,
+  type MemberRow,
+  type SensorRow,
+  type SupplierRow,
   type BatchRow,
   type EmployeeRow,
   type EquipmentRow,
@@ -38,16 +48,16 @@ import {
 } from './rows'
 
 const DAY = 86_400_000
-/** 30-day period + the 30 days before it for comparisons. */
-const HISTORY_DAYS = 62
+/** A year of orders, expenses and harvests for the module pages and reports. */
+const HISTORY_DAYS = 370
 
-const cache = new Map<string, Promise<FarmRecords>>()
+const cache = new Map<string, Promise<FarmData>>()
 
 export function invalidateRecords(farmId: string) {
   cache.delete(farmId)
 }
 
-export function getRecords(farmId: string): Promise<FarmRecords> {
+export function getRecords(farmId: string): Promise<FarmData> {
   let pending = cache.get(farmId)
   if (!pending) {
     pending = load(farmId)
@@ -57,18 +67,18 @@ export function getRecords(farmId: string): Promise<FarmRecords> {
   return pending
 }
 
-async function load(farmId: string): Promise<FarmRecords> {
+async function load(farmId: string): Promise<FarmData> {
   const db = supabase()
   const since = new Date(Date.now() - HISTORY_DAYS * DAY).toISOString()
   // Harvests further back are needed for batches still producing (forecast).
-  const harvestSince = new Date(Date.now() - 150 * DAY).toISOString()
+  const harvestSince = since
   const one = async <T,>(q: PromiseLike<{ data: T | null; error: { message: string } | null }>) => {
     const { data, error } = await q
     if (error) throw new Error(error.message)
     return data as T
   }
 
-  const [farm, species, rooms, employees, batches, harvests, products, movements, orders, openOrders, expenses, tasks, equipment, audit] = await Promise.all([
+  const [farm, species, rooms, employees, batches, harvests, products, movements, orders, openOrders, expenses, tasks, equipment, audit, customers, suppliers, locations, members, sensors] = await Promise.all([
     one<FarmRow>(db.from('farms').select('id,name,location,timezone').eq('id', farmId).single()),
     one<SpeciesRow[]>(db.from('mushroom_species').select('*').eq('farm_id', farmId).order('name')),
     one<RoomRow[]>(db.from('grow_rooms').select('*, sensors(external_id)').eq('farm_id', farmId).order('name')),
@@ -81,10 +91,15 @@ async function load(farmId: string): Promise<FarmRecords> {
     fetchAll<OrderRow>((a, b) => db.from('orders').select('*, order_items(product_id,quantity,unit_price,unit_cost)').eq('farm_id', farmId).gte('created_at', since).order('created_at').range(a, b)),
     one<OrderRow[]>(db.from('orders').select('*, order_items(product_id,quantity,unit_price,unit_cost)').eq('farm_id', farmId).lt('created_at', since).not('status', 'in', '(COMPLETED,CANCELLED)')),
     fetchAll<ExpenseRow>((a, b) => db.from('expenses').select('*').eq('farm_id', farmId).gte('spent_at', since).order('spent_at').range(a, b)),
-    one<TaskRow[]>(db.from('farm_tasks').select('*').eq('farm_id', farmId).or(`status.neq.COMPLETED,due_at.gte.${new Date(Date.now() - DAY).toISOString()}`)),
+    one<TaskRow[]>(db.from('farm_tasks').select('*').eq('farm_id', farmId).or(`status.neq.COMPLETED,due_at.gte.${new Date(Date.now() - 7 * DAY).toISOString()}`)),
     one<EquipmentRow[]>(db.from('equipment').select('*').eq('farm_id', farmId)),
     // Audit is visible to managers/accounting only; others get an empty list from RLS.
     one<AuditRow[]>(db.from('audit_log').select('*').eq('farm_id', farmId).order('created_at', { ascending: false }).limit(40)),
+    one<CustomerRow[]>(db.from('customers').select('*').eq('farm_id', farmId).order('name')),
+    one<SupplierRow[]>(db.from('suppliers').select('*').eq('farm_id', farmId).order('name')),
+    one<LocationRow[]>(db.from('inventory_locations').select('*').eq('farm_id', farmId).order('name')),
+    one<MemberRow[]>(db.from('farm_members').select('user_id, role, profiles(full_name, email)').eq('farm_id', farmId).returns<MemberRow[]>()),
+    one<SensorRow[]>(db.from('sensors').select('*').eq('farm_id', farmId)),
   ])
 
   const mappedBatches = batches.map(toBatch)
@@ -103,5 +118,10 @@ async function load(farmId: string): Promise<FarmRecords> {
     tasks: tasks.map(toTask),
     equipment: equipment.map(toEquipment),
     audit: audit.map((r) => toAudit(r, (id) => codeById.get(id))).filter((a) => a !== null).slice(0, 12),
+    customers: customers.map(toCustomer),
+    suppliers: suppliers.map(toSupplier),
+    locations: locations.map(toLocation),
+    members: members.map(toMember),
+    sensors: sensors.map(toSensor),
   }
 }

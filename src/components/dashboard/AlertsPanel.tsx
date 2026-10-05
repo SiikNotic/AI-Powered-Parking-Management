@@ -66,7 +66,7 @@ export function AlertsPanel({ alerts, loading }: { alerts: FarmAlert[] | undefin
             const Icon = alertIcons[alert.type]
             const { title, description } = text(alert)
             return (
-              <li key={alert.id} className={cn('rounded-xl border px-3 py-2.5', alert.status === 'NEW' ? 'border-border bg-surface' : 'border-transparent bg-surface-2/60')}>
+              <li key={alert.id} className={cn('rounded-xl border px-3 py-2.5', alert.status === 'NEW' ? 'tile' : 'border-transparent bg-surface-2')}>
                 <div className="flex items-start gap-2.5">
                   <span className={cn('mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg', severityIconClass[alert.severity])}>
                     <Icon aria-hidden className="size-4" />

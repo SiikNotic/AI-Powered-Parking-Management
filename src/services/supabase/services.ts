@@ -1,21 +1,15 @@
 /** Supabase implementations of the service contracts (anon key + user session + RLS). */
 import type { AlertStatus, FarmAlert, Role } from '@/types'
 import { changeFeed } from '../changeFeed'
-import type { AlertService, AuthService, DashboardService, PreferencesService, SearchResult, SearchService, SensorProvider, WidgetPreference } from '../contracts'
+import type { AlertService, AuthService, DashboardService, FarmDataService, PreferencesService, SearchResult, SearchService, SensorProvider, WidgetPreference } from '../contracts'
 import { DEFAULT_LAYOUT } from '../demo/demoPreferencesService'
 import { ServiceError } from '../errors'
 import { buildAlertDrafts } from '../shared/alerts'
 import { buildSnapshot } from '../shared/snapshot'
-import { fetchAll, supabase } from './client'
+import { fail, fetchAll, supabase } from './client'
 import { closeAllChannels, farmChannel } from './realtime'
 import { getRecords, invalidateRecords } from './records'
 import { toFarm, toReading, type FarmRow, type ReadingRow } from './rows'
-
-const fail = (error: { message: string; code?: string } | null) => {
-  if (!error) return
-  if (error.code === '42501' || /permission|not allowed|row-level security/i.test(error.message)) throw new ServiceError('forbidden', error.message)
-  throw new ServiceError('network', error.message)
-}
 
 // ---------- Auth ----------
 
@@ -92,6 +86,13 @@ export const supabaseDashboardService: DashboardService = {
     farmChannel(farmId)
     const [records] = await Promise.all([getRecords(farmId), loadProfileNames(farmId)])
     return buildSnapshot(records, period, new Date(), (id) => profileNames.get(id))
+  },
+}
+
+export const supabaseFarmDataService: FarmDataService = {
+  async get(farmId) {
+    farmChannel(farmId)
+    return getRecords(farmId)
   },
 }
 

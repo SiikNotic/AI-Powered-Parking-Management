@@ -7,6 +7,11 @@ import type {
   FarmTask,
   GrowRoom,
   Harvest,
+  Customer,
+  InventoryLocation,
+  Member,
+  Sensor,
+  Supplier,
   InventoryMovement,
   InventoryProduct,
   MushroomSpecies,
@@ -30,4 +35,13 @@ export interface FarmRecords {
   equipment: Equipment[]
   /** Newest first. */
   audit: AuditEntry[]
+}
+
+/** Records for the module pages: the dashboard records plus reference lists. */
+export interface FarmData extends FarmRecords {
+  customers: Customer[]
+  suppliers: Supplier[]
+  locations: InventoryLocation[]
+  members: Member[]
+  sensors: Sensor[]
 }

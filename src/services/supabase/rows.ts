@@ -1,6 +1,12 @@
 /** Row shapes as returned by PostgREST (snake_case) and their mapping to the domain model. */
 import type {
   AuditEntry,
+  Customer,
+  InventoryLocation,
+  Member,
+  Role,
+  Sensor,
+  Supplier,
   Employee,
   EnvironmentalReading,
   Equipment,
@@ -239,7 +245,18 @@ export const toOrder = (r: OrderRow): Order => ({
   processedBy: r.processed_by ?? '',
 })
 
-export interface ExpenseRow { id: string; farm_id: string; spent_at: string; category: Expense['category']; description: string; amount: number | string; vendor: string | null; payment_method: Expense['paymentMethod'] }
+export interface ExpenseRow {
+  id: string
+  farm_id: string
+  spent_at: string
+  category: Expense['category']
+  description: string
+  amount: number | string
+  vendor: string | null
+  payment_method: Expense['paymentMethod']
+  supplier_id: string | null
+  corrects_id: string | null
+}
 export const toExpense = (r: ExpenseRow): Expense => ({
   id: r.id,
   farmId: r.farm_id,
@@ -249,7 +266,24 @@ export const toExpense = (r: ExpenseRow): Expense => ({
   amount: num(r.amount),
   vendor: r.vendor ?? '',
   paymentMethod: r.payment_method,
+  supplierId: r.supplier_id,
+  correctsId: r.corrects_id,
 })
+
+export interface CustomerRow { id: string; farm_id: string; name: string; company: string | null; type: Customer['type']; email: string | null; phone: string | null; payment_terms: Customer['paymentTerms'] }
+export const toCustomer = (r: CustomerRow): Customer => ({ id: r.id, farmId: r.farm_id, name: r.name, company: r.company ?? undefined, type: r.type, email: r.email ?? '', phone: r.phone ?? '', paymentTerms: r.payment_terms })
+
+export interface SupplierRow { id: string; farm_id: string; name: string; email: string | null; phone: string | null }
+export const toSupplier = (r: SupplierRow): Supplier => ({ id: r.id, farmId: r.farm_id, name: r.name, email: r.email ?? '', phone: r.phone ?? '' })
+
+export interface LocationRow { id: string; farm_id: string; name: string; kind: InventoryLocation['kind'] }
+export const toLocation = (r: LocationRow): InventoryLocation => ({ id: r.id, farmId: r.farm_id, name: r.name, kind: r.kind })
+
+export interface MemberRow { user_id: string; role: Role; profiles: { full_name: string; email: string } | null }
+export const toMember = (r: MemberRow): Member => ({ userId: r.user_id, role: r.role, name: r.profiles?.full_name ?? '', email: r.profiles?.email ?? '' })
+
+export interface SensorRow { id: string; farm_id: string; room_id: string; provider: string; external_id: string; last_seen_at: string | null }
+export const toSensor = (r: SensorRow): Sensor => ({ id: r.id, farmId: r.farm_id, roomId: r.room_id, provider: r.provider, externalId: r.external_id, lastSeenAt: r.last_seen_at })
 
 export interface TaskRow { id: string; farm_id: string; title: string; status: FarmTask['status']; priority: FarmTask['priority']; assignee_id: string | null; due_at: string | null; related_batch_id: string | null }
 export const toTask = (r: TaskRow): FarmTask => ({

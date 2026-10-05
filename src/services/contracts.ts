@@ -168,3 +168,108 @@ export interface PreferencesService {
   /** Refreshes the local cache from the server, when there is one. */
   hydrate?(userId: ID): Promise<void>
 }
+
+// ---------- Module data & write operations ----------
+
+export type { FarmData } from './shared/records'
+
+export interface FarmDataService {
+  /** Everything the module pages read for one farm (RLS-scoped in Supabase). */
+  get(farmId: ID): Promise<import('./shared/records').FarmData>
+}
+
+type Editable<T> = Omit<T, 'id' | 'farmId'> & { id?: ID }
+
+export interface BatchInput {
+  speciesId: ID
+  roomId: ID
+  substrate: string
+  substrateWeight: number
+  spawnWeight: number
+  bags: number
+  spawnDate: string
+  expectedHarvestDate: string
+  cost: number
+  notes?: string
+}
+
+export interface HarvestInput {
+  batchId: ID
+  wetWeight: number
+  wasteWeight: number
+  grade: import('@/types').HarvestGrade
+  employeeId: ID | null
+  date?: string
+}
+
+/** Manual stock change. `quantity` is signed (negative = stock out). */
+export interface MovementInput {
+  productId: ID
+  type: 'RECEIVED' | 'ADJUSTMENT' | 'DAMAGED' | 'WASTED' | 'TRANSFERRED' | 'PRODUCED'
+  quantity: number
+  reference: string
+  expiresAt?: string | null
+  fromLocationId?: ID | null
+  toLocationId?: ID | null
+}
+
+export interface PackInput {
+  sourceId: ID
+  targetId: ID
+  units: number
+}
+
+export interface OrderInput {
+  customerId: ID | null
+  channel: SaleChannel
+  paymentMethod: import('@/types').PaymentMethod
+  fulfillment: 'pickup' | 'delivery'
+  discount: number
+  taxRate: number
+  dueAt: string
+  items: { productId: ID; quantity: number; unitPrice: number }[]
+  /** COMPLETED for counter sales (stock leaves immediately). */
+  status?: 'CONFIRMED' | 'COMPLETED'
+}
+
+export type ExpenseInput = Omit<import('@/types').Expense, 'id' | 'farmId' | 'correctsId'>
+
+export interface RoomInput {
+  id?: ID
+  name: string
+  type: GrowRoom['type']
+  targets: GrowRoom['targets']
+}
+
+export interface CommandService {
+  createBatch(farmId: ID, input: BatchInput): Promise<void>
+  setBatchStatus(farmId: ID, batchId: ID, status: BatchStatus): Promise<void>
+  /** Records a harvest and moves its net weight into stock. Append-only. */
+  recordHarvest(farmId: ID, input: HarvestInput): Promise<void>
+  recordMovement(farmId: ID, input: MovementInput): Promise<void>
+  /** Bulk fresh product → retail packs. */
+  packProduct(farmId: ID, input: PackInput): Promise<void>
+  saveProduct(farmId: ID, input: Editable<import('@/types').InventoryProduct>): Promise<void>
+  saveCustomer(farmId: ID, input: Editable<import('@/types').Customer>): Promise<void>
+  saveSupplier(farmId: ID, input: Editable<import('@/types').Supplier>): Promise<void>
+  saveEmployee(farmId: ID, input: Editable<import('@/types').Employee>): Promise<void>
+  saveEquipment(farmId: ID, input: Editable<import('@/types').Equipment>): Promise<void>
+  /** Marks maintenance done and schedules the next one. */
+  completeMaintenance(farmId: ID, equipmentId: ID, nextMaintenance: string): Promise<void>
+  /** Returns the new order code. */
+  createOrder(farmId: ID, input: OrderInput): Promise<string>
+  /** Stock leaves when an order ships or completes; cancelling a shipped order returns it. */
+  setOrderStatus(farmId: ID, orderId: ID, status: import('@/types').OrderStatus): Promise<void>
+  addExpense(farmId: ID, input: ExpenseInput): Promise<void>
+  /** Expenses are never edited: a correction is a new, opposite record. */
+  correctExpense(farmId: ID, expenseId: ID, reason: string): Promise<void>
+  saveSpecies(farmId: ID, input: Editable<MushroomSpecies>): Promise<void>
+  saveRoom(farmId: ID, input: RoomInput): Promise<void>
+  saveFarm(farmId: ID, input: { name: string; location: string; timezone: string }): Promise<void>
+  saveTask(farmId: ID, input: Editable<FarmTask>): Promise<void>
+  setMemberRole(farmId: ID, userId: ID, role: Role): Promise<void>
+  /** Registers a sensor for a room and stores its device token (hashed). */
+  registerSensor(farmId: ID, input: { roomId: ID; provider: string; externalId: string; token: string }): Promise<void>
+  /** Fills an empty farm with the sample data set. */
+  loadDemoData(farmId: ID): Promise<void>
+}

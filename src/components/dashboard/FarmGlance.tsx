@@ -106,9 +106,9 @@ export function FarmGlance({ snapshot, environment, alerts }: FarmGlanceProps) {
     <Card labelledBy="glance-title" className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="min-w-0">
         <CardHeader id="glance-title" icon={<Compass aria-hidden className="size-4" />} title={t('glance.title')} subtitle={t('glance.subtitle')} />
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border xl:grid-cols-3 2xl:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-glass-border bg-border xl:grid-cols-3 2xl:grid-cols-4">
           {answers.filter((a): a is Answer => Boolean(a)).map((a) => (
-            <Link key={a.key} to={a.to} className="group flex min-w-0 flex-col bg-surface px-3 py-2.5 sm:px-3.5 sm:py-3 transition-colors hover:bg-surface-hover">
+            <Link key={a.key} to={a.to} className="group flex min-w-0 flex-col bg-surface-raised/70 px-3 py-2.5 sm:px-3.5 sm:py-3 transition-colors hover:bg-surface-hover">
               <dt className="truncate text-[0.75rem] text-text-muted">{a.question}</dt>
               <dd className={cn('tabular mt-0.5 truncate font-display text-[1.0625rem] font-semibold', a.tone === 'danger' ? 'text-crit-ink' : a.tone === 'warning' ? 'text-warn-ink' : 'text-text')}>{a.answer}</dd>
               {a.detail && <dd className="truncate text-[0.6875rem] text-text-muted">{a.detail}</dd>}
