@@ -22,7 +22,8 @@ export function NotificationsMenu() {
   return (
     <Popover
       label={t('topbar.notifications')}
-      panelClassName="w-[min(22rem,calc(100vw-2rem))]"
+      // On phones the bell sits mid-header, so pin the panel to the screen edges instead.
+      panelClassName="w-[22rem] max-sm:fixed max-sm:inset-x-4 max-sm:top-16 max-sm:w-auto"
       trigger={(props) => (
         <button
           {...props}
