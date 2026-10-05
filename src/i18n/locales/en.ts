@@ -78,6 +78,9 @@ const en = {
     box_truck: 'Box Truck',
     rv: 'RV',
     car: 'Car',
+    suv: 'SUV',
+    pickup: 'Pickup',
+    motorcycle: 'Motorcycle',
     van: 'Van',
   },
   spaceType: {
@@ -85,8 +88,12 @@ const en = {
     trailer: 'Trailer',
     rv: 'RV',
     car: 'Car',
+    compact: 'Compact car',
+    ev: 'EV charging',
     oversized: 'Oversized',
   },
+  priceUnit: { night: '/night', day: '/day', hour: '/hr' },
+  category: { truck: 'Truck parking', car: 'Car parking', rv: 'RV parking' },
   dashboard: {
     title: 'Dashboard',
     kpi: {
@@ -127,7 +134,7 @@ const en = {
       showAll: 'Show all',
       zone: 'Zone {zone}',
       space: 'Space {number}',
-      spaceDetails: '{type} · {length}×{width} ft · {price}/night',
+      spaceDetails: '{type} · {length}×{width} ft · {price}{unit}',
       liveIndicator: 'Live',
       legend: 'Status legend',
       mapLabel: 'Parking map for {location}',
@@ -186,6 +193,7 @@ const en = {
     alerts: {
       title: 'Attention Required',
       subtitle: '{count} open items',
+      subtitleOne: '1 open item',
       empty: 'Everything looks good',
       emptyDescription: 'No issues need your attention right now.',
       severity: { critical: 'Critical', warning: 'Warning', info: 'Info' },

@@ -2,7 +2,7 @@
  * ⚠️ DEMO DATA — NOT REAL.
  * Occupancy curves and revenue history for the demo dashboard.
  */
-import type { OccupancyPeriod, OccupancyPoint, RevenueStats } from '@/types'
+import type { OccupancyPeriod, OccupancyPoint, ParkingCategory, RevenueStats } from '@/types'
 import { createRandom, DEMO_NOW, toISODate } from './demoUtils'
 import { mockLocations, mockSpaces } from './mockParkingData'
 
@@ -11,12 +11,24 @@ import { mockLocations, mockSpaces } from './mockParkingData'
  * matching the Available KPI.
  *
  * Typical share of spaces occupied for each hour of the day.
- * Truck parking fills overnight and empties mid-day.
+ * Truck and RV parking fills overnight and empties mid-day;
+ * car parking follows the working day.
  */
-const hourlyProfile = [
+const overnightProfile = [
   0.9, 0.92, 0.93, 0.92, 0.88, 0.78, 0.64, 0.52, 0.45, 0.4, 0.37, 0.36,
   0.36, 0.38, 0.42, 0.48, 0.55, 0.63, 0.71, 0.78, 0.83, 0.86, 0.88, 0.89, 0.9,
 ]
+
+const daytimeProfile = [
+  0.12, 0.1, 0.09, 0.09, 0.1, 0.14, 0.28, 0.52, 0.74, 0.84, 0.88, 0.9,
+  0.92, 0.9, 0.86, 0.8, 0.72, 0.6, 0.45, 0.34, 0.26, 0.2, 0.16, 0.14, 0.12,
+]
+
+const categoryOf = (locationId: string): ParkingCategory =>
+  mockLocations.find((l) => l.id === locationId)?.category ?? 'truck'
+
+/** Average daily occupancy ratio used for the 7/30-day series. */
+const dailyBase: Record<ParkingCategory, number> = { truck: 0.6, car: 0.62, rv: 0.3 }
 
 function currentOccupied(locationId: string): number {
   return mockSpaces.filter((s) => s.locationId === locationId && s.status === 'occupied').length
@@ -40,6 +52,7 @@ function buildToday(locationId: string, seed: number): OccupancyPoint[] {
   const midnight = new Date(DEMO_NOW)
   midnight.setHours(0, 0, 0, 0)
   const hoursElapsed = DEMO_NOW.getHours() + DEMO_NOW.getMinutes() / 60
+  const hourlyProfile = categoryOf(locationId) === 'car' ? daytimeProfile : overnightProfile
   // Scale the profile so the curve lands exactly on the live value.
   const profileNow = hourlyProfile[Math.floor(hoursElapsed)]
   const scale = occupiedNow / (profileNow * capacity || 1)
@@ -67,7 +80,7 @@ function buildDaily(locationId: string, days: number, seed: number): OccupancyPo
     day.setHours(12, 0, 0, 0)
     day.setDate(day.getDate() - i)
     const weekend = day.getDay() === 0 || day.getDay() === 6
-    const base = locationId === 'loc_dal' ? 0.82 : locationId === 'loc_njr' ? 0.3 : 0.55
+    const base = locationId === 'loc_dal' ? 0.82 : dailyBase[categoryOf(locationId)]
     const ratio = Math.min(0.98, base + (weekend ? -0.06 : 0.03) + (random() - 0.5) * 0.12)
     const occupied = Math.round(capacity * ratio)
     const reserved = Math.round((capacity - occupied) * 0.15)
@@ -96,6 +109,7 @@ const revenueTargets: Record<string, { today: number; week: number; month: numbe
   loc_phl: { today: 290, week: 2180, month: 8310, previousWeek: 1950 },
   loc_dal: { today: 248, week: 1870, month: 7140, previousWeek: 1730 },
   loc_njr: { today: 104, week: 770, month: 2970, previousWeek: 610 },
+  loc_hou: { today: 386, week: 2650, month: 10840, previousWeek: 2410 },
 }
 
 /** Generates 30 days of revenue that add up exactly to the targets above. */

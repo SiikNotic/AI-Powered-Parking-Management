@@ -38,7 +38,13 @@ export function AlertCard({ alerts, locations, className }: AlertCardProps) {
       <CardHeader
         id="attention-title"
         title={t('dashboard.alerts.title')}
-        subtitle={sorted ? t('dashboard.alerts.subtitle', { count: sorted.length }) : undefined}
+        subtitle={
+          sorted
+            ? sorted.length === 1
+              ? t('dashboard.alerts.subtitleOne')
+              : t('dashboard.alerts.subtitle', { count: sorted.length })
+            : undefined
+        }
         action={
           sorted && sorted.length > 0 ? (
             <span className="tabular flex size-7 items-center justify-center rounded-full bg-occupied text-xs font-bold text-white" aria-hidden>

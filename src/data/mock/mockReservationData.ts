@@ -24,17 +24,22 @@ export const mockCustomers: Customer[] = [
   { id: 'cus_14', name: 'Linda Nguyen', email: 'linda.n@example.com', phone: '+1 469 555 0168' },
   { id: 'cus_15', name: 'Carlos Mendoza', email: 'c.mendoza@example.com', phone: '+1 214 555 0135' },
   { id: 'cus_16', name: 'James Wilson', email: 'jwilson@example.com', phone: '+1 267 555 0177' },
+  { id: 'cus_17', name: 'Rachel Kim', email: 'rachel.kim@example.com', phone: '+1 713 555 0126' },
+  { id: 'cus_18', name: 'Daniel Ortiz', email: 'd.ortiz@example.com', phone: '+1 832 555 0181' },
+  { id: 'cus_19', name: 'Megan Foster', email: 'mfoster@example.com', phone: '+1 713 555 0158' },
+  { id: 'cus_20', name: 'Omar Haddad', email: 'omar.h@example.com', phone: '+1 281 555 0139' },
 ]
 
 const statusCycle: ReservationStatus[] = ['confirmed', 'confirmed', 'pending', 'confirmed']
 
 /** Check-in offsets (hours from now) — spread over the next ~day and a half. */
-const checkInOffsets = [3.5, 1.25, 5, 7.5, 2, 9, 4.25, 11, 6, 13, 15.5, 18, 20, 23.5, 26, 30]
+const checkInOffsets = [3.5, 1.25, 5, 7.5, 2, 9, 4.25, 11, 6, 13, 15.5, 18, 20, 23.5, 26, 30, 17.5, 19, 21.5, 25]
 
 export const mockReservations: Reservation[] = mockSpaces
   .filter((space) => space.status === 'reserved')
   .map((space, index) => {
     const checkInHours = checkInOffsets[index % checkInOffsets.length]
+    const daily = space.priceUnit !== 'night'
     const nights = index % 5 === 0 ? 2 : 1
     const vehicleType: VehicleType = space.vehicleTypes[index % space.vehicleTypes.length]
     return {
@@ -46,9 +51,9 @@ export const mockReservations: Reservation[] = mockSpaces
       customer: mockCustomers[index % mockCustomers.length],
       vehicleType,
       checkIn: hoursFromNow(checkInHours),
-      checkOut: hoursFromNow(checkInHours + 14 + (nights - 1) * 24),
+      checkOut: hoursFromNow(daily ? checkInHours + 9 : checkInHours + 14 + (nights - 1) * 24),
       status: statusCycle[index % statusCycle.length],
-      total: space.price * nights,
+      total: daily ? space.price : space.price * nights,
       currency: 'USD' as const,
     }
   })

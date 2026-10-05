@@ -6,14 +6,14 @@ import {
   CircleDollarSign,
   LogIn,
   LogOut,
-  Truck,
+  CarFront,
   type LucideIcon,
 } from 'lucide-react'
 import type { ActivityTone, ActivityType } from '@/types'
 import type { BadgeTone } from '@/components/ui/Badge'
 
 export const activityVisuals: Record<ActivityType, { icon: LucideIcon; tone: ActivityTone }> = {
-  space_occupied: { icon: Truck, tone: 'danger' },
+  space_occupied: { icon: CarFront, tone: 'danger' },
   space_available: { icon: CircleCheck, tone: 'success' },
   reservation_confirmed: { icon: CalendarCheck2, tone: 'info' },
   reservation_received: { icon: CalendarPlus, tone: 'info' },

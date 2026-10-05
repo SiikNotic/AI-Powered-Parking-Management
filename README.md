@@ -1,6 +1,8 @@
 # Sky Parking — Parking Management Dashboard
 
 Web dashboard for parking lot owners and managers (project: **AI-Powered-Parking-Management**).
+Supports truck, RV and car parking locations (`ParkingLocation.category`), with per-space
+vehicle types, space types (oversized, compact, EV charging…) and price units (night/day/hour).
 The customer mobile app lives in a separate repository (`Sky-parking-app`).
 
 > **Phase 1:** only `/dashboard` is fully built. Every other route shows a "Coming soon" page.
@@ -29,7 +31,8 @@ Charts are hand-written SVG (no chart library) to keep the bundle small.
 src/
   types/            Domain types (ParkingLocation, ParkingSpace, Reservation, Customer,
                     ParkingStats, RevenueStats, ActivityEvent, Alert, …)
-  data/mock/        ⚠️ DEMO DATA ONLY — 3 locations, 150 spaces, reservations, revenue,
+  data/mock/        ⚠️ DEMO DATA ONLY — 4 locations (2 truck, 1 RV, 1 car), 198 spaces,
+                    reservations, revenue,
                     activity, alerts. Only imported by services/mock.
   services/
     contracts.ts    Service interfaces the UI depends on

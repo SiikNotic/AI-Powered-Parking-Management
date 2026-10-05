@@ -75,6 +75,9 @@ const es: Translations = {
     box_truck: 'Camión caja',
     rv: 'Casa rodante',
     car: 'Auto',
+    suv: 'SUV',
+    pickup: 'Pickup',
+    motorcycle: 'Motocicleta',
     van: 'Van',
   },
   spaceType: {
@@ -82,8 +85,12 @@ const es: Translations = {
     trailer: 'Remolque',
     rv: 'Casa rodante',
     car: 'Auto',
+    compact: 'Auto compacto',
+    ev: 'Carga eléctrica',
     oversized: 'Sobredimensionado',
   },
+  priceUnit: { night: '/noche', day: '/día', hour: '/h' },
+  category: { truck: 'Estacionamiento de camiones', car: 'Estacionamiento de autos', rv: 'Estacionamiento de casas rodantes' },
   dashboard: {
     title: 'Dashboard',
     kpi: {
@@ -124,7 +131,7 @@ const es: Translations = {
       showAll: 'Mostrar todos',
       zone: 'Zona {zone}',
       space: 'Espacio {number}',
-      spaceDetails: '{type} · {length}×{width} ft · {price}/noche',
+      spaceDetails: '{type} · {length}×{width} ft · {price}{unit}',
       liveIndicator: 'En vivo',
       legend: 'Leyenda de estados',
       mapLabel: 'Mapa del estacionamiento {location}',
@@ -183,6 +190,7 @@ const es: Translations = {
     alerts: {
       title: 'Requiere atención',
       subtitle: '{count} pendientes',
+      subtitleOne: '1 pendiente',
       empty: 'Todo se ve bien',
       emptyDescription: 'No hay problemas que requieran tu atención ahora.',
       severity: { critical: 'Crítico', warning: 'Aviso', info: 'Info' },

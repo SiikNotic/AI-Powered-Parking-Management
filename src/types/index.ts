@@ -19,9 +19,24 @@ export type LocationFilter = ID | 'all'
 
 export type SpaceStatus = 'available' | 'occupied' | 'reserved' | 'maintenance' | 'disabled'
 
-export type SpaceType = 'truck' | 'trailer' | 'rv' | 'car' | 'oversized'
+/** What kind of vehicles a location is built for. */
+export type ParkingCategory = 'truck' | 'car' | 'rv'
 
-export type VehicleType = 'semi_trailer' | 'bobtail' | 'box_truck' | 'rv' | 'car' | 'van'
+export type SpaceType = 'truck' | 'trailer' | 'oversized' | 'rv' | 'car' | 'compact' | 'ev'
+
+export type VehicleType =
+  | 'semi_trailer'
+  | 'bobtail'
+  | 'box_truck'
+  | 'rv'
+  | 'car'
+  | 'suv'
+  | 'pickup'
+  | 'motorcycle'
+  | 'van'
+
+/** Billing period for a space's price (trucks/RVs per night, cars per day). */
+export type PriceUnit = 'night' | 'day' | 'hour'
 
 export interface ParkingLocation {
   id: ID
@@ -31,6 +46,7 @@ export interface ParkingLocation {
   address: string
   timezone: string
   totalSpaces: number
+  category: ParkingCategory
   /** Short code used for space labels (e.g. "PHL"). */
   code: string
 }
@@ -48,8 +64,9 @@ export interface ParkingSpace {
   length: number
   /** Width in feet. */
   width: number
-  /** Nightly price in USD. */
+  /** Price in USD per `priceUnit`. */
   price: number
+  priceUnit: PriceUnit
   vehicleTypes: VehicleType[]
   updatedAt: ISODateString
 }

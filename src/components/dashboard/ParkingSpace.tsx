@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Tooltip } from '@/components/ui/Tooltip'
-import { statusVisuals } from '@/config/status'
+import { spaceTypeIcons, statusVisuals } from '@/config/status'
 import type { Formatters } from '@/hooks/useFormat'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/cn'
@@ -17,13 +17,15 @@ interface ParkingSpaceProps {
 export const ParkingSpace = memo(function ParkingSpace({ space, dimmed, fmt, tabbable }: ParkingSpaceProps) {
   const { t } = useI18n()
   const visual = statusVisuals[space.status]
-  const Icon = visual.icon
+  // Occupied spaces show the kind of vehicle the space is built for.
+  const Icon = space.status === 'occupied' ? spaceTypeIcons[space.type] : visual.icon
   const statusLabel = t(`status.${space.status}`)
   const details = t('dashboard.live.spaceDetails', {
     type: t(`spaceType.${space.type}`),
     length: space.length,
     width: space.width,
     price: fmt.currency(space.price),
+    unit: t(`priceUnit.${space.priceUnit}`),
   })
   const label = `${t('dashboard.live.space', { number: space.number })} · ${statusLabel}`
 

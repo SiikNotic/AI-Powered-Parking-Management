@@ -1,4 +1,7 @@
 import {
+  Car,
+  CarFront,
+  Caravan,
   CircleCheck,
   CircleSlash,
   Clock3,
@@ -6,7 +9,7 @@ import {
   Wrench,
   type LucideIcon,
 } from 'lucide-react'
-import type { SpaceStatus } from '@/types'
+import type { ParkingCategory, SpaceStatus, SpaceType } from '@/types'
 
 /**
  * Single source of truth for parking status visuals.
@@ -32,7 +35,7 @@ export const statusVisuals: Record<SpaceStatus, StatusVisual> = {
     cell: 'bg-available-soft text-available-ink border-available/35 hover:border-available',
   },
   occupied: {
-    icon: Truck,
+    icon: CarFront,
     dot: 'bg-occupied',
     badge: 'bg-occupied-soft text-occupied-ink',
     cell: 'bg-occupied text-white border-occupied hover:brightness-110',
@@ -55,4 +58,21 @@ export const statusVisuals: Record<SpaceStatus, StatusVisual> = {
     badge: 'bg-disabled-soft text-disabled-ink',
     cell: 'bg-disabled-soft text-disabled-ink border-transparent opacity-70',
   },
+}
+
+/** Vehicle icon per space type — used for occupied spaces on the map. */
+export const spaceTypeIcons: Record<SpaceType, LucideIcon> = {
+  truck: Truck,
+  trailer: Truck,
+  oversized: Truck,
+  rv: Caravan,
+  car: Car,
+  compact: Car,
+  ev: Car,
+}
+
+export const categoryIcons: Record<ParkingCategory, LucideIcon> = {
+  truck: Truck,
+  car: Car,
+  rv: Caravan,
 }

@@ -1,4 +1,4 @@
-import { CircleCheck, CircleDollarSign, Clock3, SquareParking, Truck } from 'lucide-react'
+import { CarFront, CircleCheck, CircleDollarSign, Clock3, SquareParking } from 'lucide-react'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import type { AsyncResult } from '@/hooks/useAsync'
 import { useFormat } from '@/hooks/useFormat'
@@ -75,7 +75,7 @@ export function KpiGrid({ stats, revenue, locationCount, locationLabel }: KpiGri
       <StatCard
         label={t('dashboard.kpi.occupied')}
         value={fmt.number(s.occupied)}
-        icon={Truck}
+        icon={CarFront}
         iconClassName="bg-occupied-soft text-occupied-ink"
         delta={{ ...deltaOf(s.occupied, s.previous.occupied), intent: 'up-is-good' }}
         share={{ ratio: shareOf(s.occupied), barClassName: 'bg-occupied' }}
