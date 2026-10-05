@@ -61,7 +61,9 @@ export const supabaseAuthService: AuthService = {
     if (error) throw new ServiceError(error.status === 400 ? 'invalid' : 'network', error.message)
   },
   async signUp(email, password, fullName) {
-    const { data, error } = await supabase().auth.signUp({ email, password, options: { data: { full_name: fullName } } })
+    // Confirmation links return to wherever the app is hosted (local or GitHub Pages).
+    const emailRedirectTo = `${window.location.origin}${window.location.pathname}`
+    const { data, error } = await supabase().auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo } })
     if (error) throw new ServiceError('invalid', error.message)
     return !data.session
   },

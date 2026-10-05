@@ -30,6 +30,12 @@ jobs:
       - run: npm run build -- --base ./
         env:
           VITE_ROUTER: hash
+          # Repository variable VITE_DATA_SOURCE=supabase switches the site to live data.
+          # URL and publishable key are public values (RLS protects the data);
+          # never put a service_role key here.
+          VITE_DATA_SOURCE: ${{ vars.VITE_DATA_SOURCE || 'demo' }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://yrsztjrcelxaziftbgcn.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || 'sb_publishable_XbD96DIcCemWUIGdnceizg_NL0m3uv-' }}
       - name: Publish dist/ to gh-pages
         working-directory: dist
         env:

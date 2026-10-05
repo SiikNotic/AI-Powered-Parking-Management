@@ -3,7 +3,7 @@ import { LogoMark } from '@/components/layout/Logo'
 import { Button } from '@/components/ui/Button'
 import { useErrorMessage } from '@/hooks/useMutation'
 import { useI18n } from '@/i18n'
-import { authService } from '@/services'
+import { authService, ServiceError } from '@/services'
 
 const inputClass =
   'h-11 w-full rounded-xl border border-border bg-surface-raised px-3 text-sm text-text placeholder:text-text-muted transition-colors hover:border-border-strong focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
@@ -29,7 +29,7 @@ export function SignInPage() {
       if (mode === 'signIn') await authService.signIn(email.trim(), password)
       else if (await authService.signUp(email.trim(), password, name.trim())) setNotice(t('auth.checkEmail'))
     } catch (err) {
-      setError(mode === 'signIn' ? t('auth.invalid') : message(err))
+      setError(mode === 'signIn' && err instanceof ServiceError && err.code === 'invalid' ? t('auth.invalid') : message(err))
     } finally {
       setPending(false)
     }
