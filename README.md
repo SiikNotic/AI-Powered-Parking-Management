@@ -20,6 +20,12 @@ npm run preview    # serve the production build
 
 Requires Node 20+.
 
+## Deploy (GitHub Pages)
+
+`.github/workflows/deploy-pages.yml` builds and deploys on every push to `main`.
+One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+The Pages build uses hash routing (`VITE_ROUTER=hash`), so URLs look like `…/#/dashboard`.
+
 ## Stack
 
 React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · React Router · lucide-react icons.
