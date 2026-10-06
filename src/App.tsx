@@ -1,6 +1,7 @@
 import { lazy, type ComponentType } from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { RequirePermission } from '@/components/layout/RequirePermission'
 import { MODULES, type ModuleId } from '@/config/navigation'
 import { SessionProvider } from '@/context/SessionProvider'
 import { ThemeProvider } from '@/context/ThemeContext'
@@ -61,7 +62,17 @@ export default function App() {
                   <Route index element={<DashboardPage />} />
                   {(Object.keys(PAGES) as (keyof typeof PAGES)[]).map((id) => {
                     const Page = PAGES[id]
-                    return <Route key={id} path={MODULES[id].path} element={<Page />} />
+                    return (
+                      <Route
+                        key={id}
+                        path={MODULES[id].path}
+                        element={
+                          <RequirePermission permission={MODULES[id].permission}>
+                            <Page />
+                          </RequirePermission>
+                        }
+                      />
+                    )
                   })}
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

@@ -120,7 +120,7 @@ export function DataTable<T>({ rows, columns, rowKey, label, onRowClick, emptyTi
                   .map((c) => (
                     <div key={c.key} className="min-w-0">
                       <dt className="truncate text-[0.6875rem] text-text-muted">{c.header}</dt>
-                      <dd className="min-w-0 truncate text-xs text-text-secondary">{c.cell(row)}</dd>
+                      <dd className="min-w-0 break-words text-xs text-text-secondary [&_.whitespace-nowrap]:whitespace-normal">{c.cell(row)}</dd>
                     </div>
                   ))}
               </dl>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useElementWidth } from '@/hooks/useElementWidth'
-import { linearScale, monotonePath, niceMax } from '@/lib/chart'
+import { linearScale, niceMax } from '@/lib/chart'
 import { ChartTooltip } from './ChartTooltip'
 
 export interface FinanceDatum {
@@ -37,7 +37,8 @@ export function FinanceChart({ data, labels, format, formatAxis, height = 220, l
   const labelEvery = Math.ceil(data.length / Math.max(1, Math.floor(plotW / 48)))
   const ticks = lo < 0 ? [lo, 0, maxV / 2, maxV] : [0, maxV / 4, maxV / 2, (maxV * 3) / 4, maxV]
   const cx = (i: number) => left + slot * i + slot / 2
-  const profitPath = monotonePath(data.map((d, i) => [cx(i), y(d.profit)]))
+  // Straight segments: daily profit is discrete, so no smoothing between days.
+  const profitPath = data.map((d, i) => `${i ? 'L' : 'M'}${cx(i)},${y(d.profit)}`).join('')
 
   return (
     <div ref={ref} className="relative" onMouseLeave={() => setHover(null)}>

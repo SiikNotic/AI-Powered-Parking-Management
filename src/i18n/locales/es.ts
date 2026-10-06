@@ -464,6 +464,10 @@ const es: Translations = {
     reports: reportsPage.es,
     settings: settingsPage.es,
   },
+  access: {
+    title: 'No disponible para tu rol',
+    description: 'Tu rol ({role}) no incluye esta sección. Pide acceso al propietario de la granja si lo necesitas.',
+  },
   form: {
     optional: 'opcional',
     save: 'Guardar',

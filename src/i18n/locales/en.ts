@@ -469,6 +469,10 @@ const en = {
     reports: reportsPage.en,
     settings: settingsPage.en,
   },
+  access: {
+    title: 'Not available for your role',
+    description: 'Your role ({role}) doesn’t include this section. Ask the farm owner if you need access.',
+  },
   form: {
     optional: 'optional',
     save: 'Save',
