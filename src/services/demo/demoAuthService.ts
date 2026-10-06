@@ -29,7 +29,7 @@ export const demoAuthService: AuthService = {
   signIn: async () => undefined,
   signUp: async () => false,
   signOut: async () => undefined,
-  createFarm: async () => undefined,
+  createFarm: async () => demoFarms[0].id,
   async setRole(role) {
     try {
       localStorage.setItem(ROLE_KEY, role)

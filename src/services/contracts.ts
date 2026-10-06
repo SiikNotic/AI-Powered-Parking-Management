@@ -44,8 +44,8 @@ export interface AuthService {
   /** Returns true when the email must be confirmed before signing in. */
   signUp(email: string, password: string, fullName: string): Promise<boolean>
   signOut(): Promise<void>
-  /** Creates a farm owned by the signed-in user. */
-  createFarm(name: string, location: string): Promise<void>
+  /** Creates a farm owned by the signed-in user and returns its id. */
+  createFarm(name: string, location: string): Promise<ID>
   /** Demo only: preview the dashboard as another role. */
   setRole?(role: Role): Promise<void>
 }

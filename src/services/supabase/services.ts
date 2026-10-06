@@ -65,9 +65,9 @@ export const supabaseAuthService: AuthService = {
     await supabase().auth.signOut()
   },
   async createFarm(name, location) {
-    const { error } = await supabase().rpc('create_farm', { p_name: name, p_location: location, p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+    const { data, error } = await supabase().rpc('create_farm', { p_name: name, p_location: location, p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone })
     fail(error)
-    changeFeed.publish('session')
+    return String(data)
   },
 }
 

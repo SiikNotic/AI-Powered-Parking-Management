@@ -437,6 +437,9 @@ const es: Translations = {
     farmName: 'Nombre de la granja',
     location: 'Ubicación',
     create: 'Crear granja',
+    sampleData: 'Llenarla con datos de ejemplo',
+    sampleHint: 'Unos 60 días de lotes, cosechas, stock, pedidos y gastos para probar todos los módulos. Desmárcalo para empezar vacía.',
+    loadingSample: 'Creando la granja y cargando datos de ejemplo…',
   },
   comingSoon: {
     phase: 'Llega en la fase {phase}',

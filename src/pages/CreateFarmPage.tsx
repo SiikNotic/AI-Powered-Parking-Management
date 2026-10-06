@@ -1,9 +1,10 @@
 import { Warehouse } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Checkbox } from '@/components/ui/Form'
 import { useErrorMessage } from '@/hooks/useMutation'
 import { useI18n } from '@/i18n'
-import { authService } from '@/services'
+import { authService, changeFeed, commands } from '@/services'
 
 const inputClass =
   'h-11 w-full rounded-xl border border-border bg-surface-raised px-3 text-sm text-text placeholder:text-text-muted transition-colors hover:border-border-strong focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20'
@@ -14,6 +15,7 @@ export function CreateFarmPage({ name }: { name: string }) {
   const message = useErrorMessage()
   const [farm, setFarm] = useState('')
   const [location, setLocation] = useState('')
+  const [withSample, setWithSample] = useState(true)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,7 +24,10 @@ export function CreateFarmPage({ name }: { name: string }) {
     setPending(true)
     setError(null)
     try {
-      await authService.createFarm(farm.trim(), location.trim())
+      const farmId = await authService.createFarm(farm.trim(), location.trim())
+      // Optional: fill the new farm with ~60 days of sample history to explore every module.
+      if (withSample) await commands.loadDemoData(farmId)
+      changeFeed.publish('session')
     } catch (err) {
       setError(message(err))
       setPending(false)
@@ -46,13 +51,15 @@ export function CreateFarmPage({ name }: { name: string }) {
             <span className="mb-1 block text-xs font-semibold text-text-secondary">{t('onboarding.location')}</span>
             <input value={location} onChange={(e) => setLocation(e.target.value)} className={inputClass} />
           </label>
+          <Checkbox label={t('onboarding.sampleData')} checked={withSample} onChange={(e) => setWithSample(e.target.checked)} />
+          <p className="-mt-1 text-xs text-text-muted">{t('onboarding.sampleHint')}</p>
           {error && (
             <p role="alert" className="rounded-lg bg-crit-soft px-3 py-2 text-xs font-medium text-crit-ink">
               {error}
             </p>
           )}
           <Button type="submit" variant="primary" disabled={pending} className="h-11 w-full">
-            {pending ? t('states.loading') : t('onboarding.create')}
+            {pending ? (withSample ? t('onboarding.loadingSample') : t('states.loading')) : t('onboarding.create')}
           </Button>
         </form>
         <button type="button" onClick={() => void authService.signOut()} className="mt-4 w-full text-center text-xs font-semibold text-text-muted hover:text-text">

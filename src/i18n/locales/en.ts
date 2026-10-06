@@ -442,6 +442,9 @@ const en = {
     farmName: 'Farm name',
     location: 'Location',
     create: 'Create farm',
+    sampleData: 'Fill it with sample data',
+    sampleHint: 'About 60 days of batches, harvests, stock, orders and expenses so you can try every module. Leave unchecked to start empty.',
+    loadingSample: 'Creating farm and loading sample data…',
   },
   comingSoon: {
     phase: 'Coming in phase {phase}',
