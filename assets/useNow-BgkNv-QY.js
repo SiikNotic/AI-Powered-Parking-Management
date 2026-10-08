@@ -1,0 +1,1 @@
+import{S as e}from"./rows-DRz1kqyp.js";import{Mt as t}from"./Card-DF4T5kwC.js";var n=e(t(),1);function r(e=6e4){let[t,r]=(0,n.useState)(()=>new Date);return(0,n.useEffect)(()=>{let t=window.setInterval(()=>r(new Date),e);return()=>window.clearInterval(t)},[e]),t}export{r as t};

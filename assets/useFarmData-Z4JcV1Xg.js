@@ -1,0 +1,1 @@
+import{S as e}from"./rows-DRz1kqyp.js";import{Mt as t,g as n,mt as r,u as i}from"./Card-DF4T5kwC.js";var a=e(t(),1),o=new Map;function s(){let{farm:e}=r(),t=i(()=>n.get(e.id),[e.id],[`dashboard`]),s=t.data&&t.data.farm.id===e.id?t.data:void 0;(0,a.useEffect)(()=>{s&&o.set(e.id,s)},[s,e.id]);let c=s??o.get(e.id);return{...t,data:c}}export{s as t};

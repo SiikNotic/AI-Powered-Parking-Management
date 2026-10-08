@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Mushroom Farm Manager — production, harvest, inventory, sales and environment for mushroom farms." />
+    <meta name="theme-color" content="#f4f2ed" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111210" media="(prefers-color-scheme: dark)" />
+    <title>Mushroom Farm Manager</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        var t = localStorage.getItem('mushroom-farm.theme')
+        if (t !== 'light' && t !== 'dark') t = document.documentElement.dataset.theme
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="./assets/index-Cp11MrgE.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/rows-DRz1kqyp.js">
+    <link rel="modulepreload" crossorigin href="./assets/Card-DF4T5kwC.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-JhVlK7MS.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

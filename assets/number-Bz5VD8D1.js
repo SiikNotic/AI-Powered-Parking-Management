@@ -1,0 +1,1 @@
+var e=e=>e.trim()===``?NaN:Number(e.replace(`,`,`.`));export{e as t};
