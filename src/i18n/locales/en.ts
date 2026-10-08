@@ -110,6 +110,11 @@ const en = {
       afternoon: 'Good afternoon, {name}',
       evening: 'Good evening, {name}',
     },
+    quick: {
+      newBatch: 'New batch',
+      scanQr: 'Scan QR',
+      recordHarvest: 'Record harvest',
+    },
   },
   period: {
     label: 'Period',

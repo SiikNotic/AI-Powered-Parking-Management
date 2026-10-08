@@ -28,6 +28,7 @@ const emptySpecies = (colorIndex: number): Draft => ({
   averageGrowDays: 30,
   shelfLifeDays: 7,
   colorIndex: colorIndex % 5,
+  imageKey: null,
 })
 
 function Swatch({ index, className }: { index: number; className?: string }) {
@@ -99,6 +100,7 @@ function SpeciesForm({ draft, onClose }: { draft: Draft; onClose: () => void }) 
     averageGrowDays: String(draft.averageGrowDays),
     shelfLifeDays: String(draft.shelfLifeDays),
     colorIndex: draft.colorIndex,
+    imageKey: draft.imageKey ?? null,
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => setForm((f) => ({ ...f, [key]: value }))
@@ -121,7 +123,7 @@ function SpeciesForm({ draft, onClose }: { draft: Draft; onClose: () => void }) 
     const { incubationTemp, fruitingTemp, humidity, co2 } = ranges
     if (Object.keys(next).length || !incubationTemp || !fruitingTemp || !humidity || !co2) return
     const result = await save.run(
-      [{ id: draft.id, name: form.name.trim(), scientificName: form.scientificName.trim(), incubationTemp, fruitingTemp, humidity, co2, averageYield: yieldPct / 100, averageGrowDays: growDays, shelfLifeDays: shelfDays, colorIndex: form.colorIndex }],
+      [{ id: draft.id, name: form.name.trim(), scientificName: form.scientificName.trim(), incubationTemp, fruitingTemp, humidity, co2, averageYield: yieldPct / 100, averageGrowDays: growDays, shelfLifeDays: shelfDays, colorIndex: form.colorIndex, imageKey: form.imageKey ?? null }],
       t('pages.settings.species.saved'),
     )
     if (result.ok) onClose()

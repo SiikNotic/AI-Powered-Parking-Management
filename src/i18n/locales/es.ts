@@ -105,6 +105,11 @@ const es: Translations = {
       afternoon: 'Buenas tardes, {name}',
       evening: 'Buenas noches, {name}',
     },
+    quick: {
+      newBatch: 'Nuevo lote',
+      scanQr: 'Escanear QR',
+      recordHarvest: 'Registrar cosecha',
+    },
   },
   period: {
     label: 'Periodo',
