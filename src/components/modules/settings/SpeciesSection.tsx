@@ -14,6 +14,7 @@ import { toNumber } from '@/lib/number'
 import type { MushroomSpecies, Range } from '@/types'
 import { parseRange, toRangeDraft } from './range'
 import { RangeInputs } from './RangeInputs'
+import { SpeciesPhotoButton } from './SpeciesPhotoButton'
 
 type Draft = Omit<MushroomSpecies, 'id'> & { id?: string }
 
@@ -42,6 +43,11 @@ export function SpeciesSection({ species, canEdit }: { species: MushroomSpecies[
   const range = (r: Range, unit: string) => `${fmt.decimal(r.min)}–${fmt.decimal(r.max)}${unit}`
 
   const columns: Column<MushroomSpecies>[] = [
+    {
+      key: 'photo',
+      header: t('pages.settings.species.columns.photo'),
+      cell: (s) => <SpeciesPhotoButton species={s} canEdit={canEdit} />,
+    },
     {
       key: 'name',
       header: t('pages.settings.species.columns.name'),

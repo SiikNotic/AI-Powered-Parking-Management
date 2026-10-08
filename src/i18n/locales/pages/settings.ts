@@ -26,7 +26,12 @@ const en = {
     newTitle: 'New species',
     editTitle: 'Edit species',
     saved: 'Species saved',
-    columns: { name: 'Species', fruitingTemp: 'Fruiting temp', humidity: 'Humidity', co2: 'CO₂', yield: 'Avg. yield', growDays: 'Grow days', shelfLife: 'Shelf life' },
+    columns: { photo: 'Photo', name: 'Species', fruitingTemp: 'Fruiting temp', humidity: 'Humidity', co2: 'CO₂', yield: 'Avg. yield', growDays: 'Grow days', shelfLife: 'Shelf life' },
+    photo: {
+      upload: 'Upload photo for {name}',
+      change: 'Change',
+      error: 'Could not upload the photo. Try a JPG or PNG under 5 MB.',
+    },
     days: '{count} d',
     fields: {
       name: 'Common name',
@@ -118,7 +123,12 @@ const es: DeepStringify<typeof en> = {
     newTitle: 'Nueva especie',
     editTitle: 'Editar especie',
     saved: 'Especie guardada',
-    columns: { name: 'Especie', fruitingTemp: 'Temp. de fructificación', humidity: 'Humedad', co2: 'CO₂', yield: 'Rend. promedio', growDays: 'Días de cultivo', shelfLife: 'Vida útil' },
+    columns: { photo: 'Foto', name: 'Especie', fruitingTemp: 'Temp. de fructificación', humidity: 'Humedad', co2: 'CO₂', yield: 'Rend. promedio', growDays: 'Días de cultivo', shelfLife: 'Vida útil' },
+    photo: {
+      upload: 'Subir foto de {name}',
+      change: 'Cambiar',
+      error: 'No se pudo subir la foto. Prueba con un JPG o PNG de menos de 5 MB.',
+    },
     days: '{count} d',
     fields: {
       name: 'Nombre común',

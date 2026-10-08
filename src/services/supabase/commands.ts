@@ -260,6 +260,7 @@ export const supabaseCommandService: CommandService = {
         average_grow_days: s.averageGrowDays,
         shelf_life_days: s.shelfLifeDays,
         color_index: s.colorIndex,
+        image_key: s.imageKey ?? null,
       }),
     )
   },
