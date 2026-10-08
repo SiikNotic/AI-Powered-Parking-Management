@@ -116,7 +116,15 @@ export function BatchDrawer({ open, batch, species, room, harvests, events, empl
       <div className="space-y-6">
         {photo && (
           <div className="overflow-hidden rounded-xl border border-border">
-            <img src={photo} alt={species?.name ?? ''} className="h-40 w-full object-cover" loading="lazy" />
+            <img
+              src={photo}
+              alt={species?.name ?? ''}
+              className="h-40 w-full object-cover"
+              loading="lazy"
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).closest('div')?.remove()
+              }}
+            />
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2">
