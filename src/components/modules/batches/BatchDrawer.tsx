@@ -1,19 +1,30 @@
-import { AlertTriangle, CheckCircle2, Circle, Scissors } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Circle, MapPin, Pencil, Scissors } from 'lucide-react'
 import { useState } from 'react'
 import { StatBlock } from '@/components/dashboard/shared'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
+import { TextInput } from '@/components/ui/Form'
 import { expectedYield, isOverdue } from '@/domain/production'
 import { useFormat } from '@/hooks/useFormat'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/cn'
+import { speciesImageUrl } from '@/lib/speciesImage'
 import { BATCH_FLOW } from '@/services/shared/rules'
-import type { BatchStatus, Employee, GrowRoom, Harvest, MushroomSpecies, ProductionBatch } from '@/types'
+import type { BatchEvent, BatchStatus, Employee, GrowRoom, Harvest, MushroomSpecies, ProductionBatch } from '@/types'
 import { HARVESTABLE } from './access'
+import { BatchQr } from './BatchQr'
 import { BatchStatusBadge } from './BatchStatusBadge'
 
 const DESTRUCTIVE: BatchStatus[] = ['FAILED', 'DISCARDED']
+
+const EVENT_ICON: Record<BatchEvent['type'], typeof CheckCircle2> = {
+  CREATED: CheckCircle2,
+  STATUS_CHANGED: CheckCircle2,
+  LOCATION_CHANGED: MapPin,
+  HARVESTED: Scissors,
+  NOTE_ADDED: Pencil,
+}
 
 interface BatchDrawerProps {
   open: boolean
@@ -21,16 +32,18 @@ interface BatchDrawerProps {
   species: MushroomSpecies | undefined
   room: GrowRoom | undefined
   harvests: Harvest[]
+  events: BatchEvent[]
   employees: Employee[]
   canWrite: boolean
   canHarvest: boolean
   pending: boolean
   onClose: () => void
   onStatus: (status: BatchStatus) => void
+  onLocation: (locationCode: string | null) => void
   onHarvest: () => void
 }
 
-export function BatchDrawer({ open, batch, species, room, harvests, employees, canWrite, canHarvest, pending, onClose, onStatus, onHarvest }: BatchDrawerProps) {
+export function BatchDrawer({ open, batch, species, room, harvests, events, employees, canWrite, canHarvest, pending, onClose, onStatus, onLocation, onHarvest }: BatchDrawerProps) {
   const { t } = useI18n()
   const fmt = useFormat()
   const employeeName = new Map(employees.map((e) => [e.id, e.name]))
@@ -53,6 +66,20 @@ export function BatchDrawer({ open, batch, species, room, harvests, employees, c
 
   const showActions = canWrite && next.length > 0
   const showHarvest = canHarvest && HARVESTABLE.includes(batch.status)
+  const photo = speciesImageUrl(species)
+  const [editingLocation, setEditingLocation] = useState(false)
+  const [locationDraft, setLocationDraft] = useState('')
+
+  const startEditLocation = () => {
+    setLocationDraft(batch.locationCode ?? '')
+    setEditingLocation(true)
+  }
+  const saveLocation = () => {
+    const code = locationDraft.trim().toUpperCase()
+    if (code && !/^[A-Za-z0-9]{1,4}-[A-Za-z0-9]{1,6}$/.test(code)) return
+    onLocation(code || null)
+    setEditingLocation(false)
+  }
 
   return (
     <Modal
@@ -87,6 +114,11 @@ export function BatchDrawer({ open, batch, species, room, harvests, employees, c
       }
     >
       <div className="space-y-6">
+        {photo && (
+          <div className="overflow-hidden rounded-xl border border-border">
+            <img src={photo} alt={species?.name ?? ''} className="h-40 w-full object-cover" loading="lazy" />
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           <BatchStatusBadge status={batch.status} />
           {overdue && (
@@ -94,7 +126,47 @@ export function BatchDrawer({ open, batch, species, room, harvests, employees, c
               {t('pages.batches.overdue')}
             </Badge>
           )}
+          {batch.locationCode ? (
+            <Badge tone="info" icon={<MapPin aria-hidden className="size-3" />}>
+              {batch.locationCode}
+            </Badge>
+          ) : (
+            canWrite && (
+              <Button size="sm" variant="ghost" onClick={startEditLocation}>
+                <MapPin aria-hidden className="size-3.5" />
+                {t('pages.batches.drawer.setLocation')}
+              </Button>
+            )
+          )}
         </div>
+
+        {editingLocation && (
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-surface p-3">
+            <TextInput
+              value={locationDraft}
+              onChange={(e) => setLocationDraft(e.target.value.toUpperCase())}
+              placeholder="A-1A"
+              maxLength={11}
+              className="uppercase"
+              aria-label={t('pages.batches.fields.locationCode')}
+              autoFocus
+            />
+            <Button size="sm" variant="primary" onClick={saveLocation} disabled={pending}>
+              {t('form.save')}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setEditingLocation(false)}>
+              {t('form.cancel')}
+            </Button>
+          </div>
+        )}
+        {!editingLocation && batch.locationCode && canWrite && (
+          <div>
+            <Button size="sm" variant="ghost" onClick={startEditLocation}>
+              <Pencil aria-hidden className="size-3.5" />
+              {t('pages.batches.drawer.moveLocation')}
+            </Button>
+          </div>
+        )}
 
         <section aria-labelledby="batch-yield">
           <h3 id="batch-yield" className="mb-2 font-display text-sm font-semibold text-text">
@@ -158,6 +230,39 @@ export function BatchDrawer({ open, batch, species, room, harvests, employees, c
               </li>
             ))}
           </ol>
+        </section>
+
+        <section aria-labelledby="batch-qr">
+          <h3 id="batch-qr" className="mb-2 font-display text-sm font-semibold text-text">
+            {t('pages.batches.drawer.qr')}
+          </h3>
+          <BatchQr batch={batch} speciesName={species?.name} locationCode={batch.locationCode} />
+        </section>
+
+        <section aria-labelledby="batch-history">
+          <h3 id="batch-history" className="mb-2 font-display text-sm font-semibold text-text">
+            {t('pages.batches.drawer.history', { count: events.length })}
+          </h3>
+          {!events.length ? (
+            <p className="text-sm text-text-muted">{t('pages.batches.drawer.noHistory')}</p>
+          ) : (
+            <ol className="relative space-y-3 border-l border-border pl-5">
+              {events.map((e) => {
+                const Icon = EVENT_ICON[e.type]
+                return (
+                  <li key={e.id} className="relative">
+                    <span className="absolute top-0.5 -left-[1.66rem] grid size-4 place-items-center rounded-full bg-surface text-text-secondary">
+                      <Icon aria-hidden className="size-3.5" />
+                    </span>
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
+                      <span className="font-medium text-text">{e.message}</span>
+                      <span className="tabular text-xs text-text-muted">{fmt.dayMonthTime(e.createdAt)}</span>
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          )}
         </section>
 
         <section aria-labelledby="batch-harvests">

@@ -40,6 +40,7 @@ export function BatchForm({ data, onClose }: { data: FarmData; onClose: () => vo
       expectedHarvestDate: plusDays(today, species[0]?.averageGrowDays ?? 0),
       cost: '',
       notes: '',
+      locationCode: '',
     }
   })
   // The expected date follows species + spawn date until the user picks one.
@@ -74,6 +75,8 @@ export function BatchForm({ data, onClose }: { data: FarmData; onClose: () => vo
     if (!form.spawnDate) next.spawnDate = t('pages.batches.errors.spawnDate')
     if (!form.expectedHarvestDate || (form.spawnDate && form.expectedHarvestDate < form.spawnDate)) next.expectedHarvestDate = t('pages.batches.errors.expectedDate')
     if (!(cost >= 0)) next.cost = t('pages.batches.errors.cost')
+    if (form.locationCode.trim() && !/^[A-Za-z0-9]{1,4}-[A-Za-z0-9]{1,6}$/.test(form.locationCode.trim()))
+      next.locationCode = t('pages.batches.errors.locationCode')
     setErrors(next)
     if (Object.keys(next).length) return
     const notes = form.notes.trim()
@@ -90,6 +93,7 @@ export function BatchForm({ data, onClose }: { data: FarmData; onClose: () => vo
           expectedHarvestDate: toIso(form.expectedHarvestDate),
           cost,
           ...(notes ? { notes } : {}),
+          ...(form.locationCode.trim() ? { locationCode: form.locationCode.trim().toUpperCase() } : {}),
         },
       ],
       t('pages.batches.created'),
@@ -137,6 +141,11 @@ export function BatchForm({ data, onClose }: { data: FarmData; onClose: () => vo
                   </option>
                 ))}
               </Select>
+            )}
+          </Field>
+          <Field label={t('pages.batches.fields.locationCode')} hint={t('pages.batches.fields.locationCodeHint')} error={errors.locationCode} optional>
+            {(p) => (
+              <TextInput {...p} value={form.locationCode} onChange={(e) => update({ locationCode: e.target.value.toUpperCase() })} placeholder="A-1A" maxLength={11} className="uppercase" />
             )}
           </Field>
           <Field label={t('pages.batches.fields.substrate')} error={errors.substrate} className="sm:col-span-2">
