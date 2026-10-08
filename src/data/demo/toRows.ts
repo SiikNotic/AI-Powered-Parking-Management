@@ -18,6 +18,7 @@ export function demoRows(data: FarmDataset, options: { readingsSinceDays?: numbe
       incubation_temp_min: s.incubationTemp.min, incubation_temp_max: s.incubationTemp.max, fruiting_temp_min: s.fruitingTemp.min, fruiting_temp_max: s.fruitingTemp.max,
       humidity_min: s.humidity.min, humidity_max: s.humidity.max, co2_min: s.co2.min, co2_max: s.co2.max,
       average_yield: s.averageYield, average_grow_days: s.averageGrowDays, shelf_life_days: s.shelfLifeDays, color_index: s.colorIndex,
+      image_key: s.imageKey ?? null,
     }))],
     ['grow_rooms', data.rooms.map((r) => ({
       id: r.id, name: r.name, type: r.type,
@@ -38,6 +39,10 @@ export function demoRows(data: FarmDataset, options: { readingsSinceDays?: numbe
       id: b.id, code: b.code, species_id: b.speciesId, room_id: b.roomId, substrate: b.substrate, substrate_weight: b.substrateWeight,
       spawn_weight: b.spawnWeight, bags: b.bags, spawn_date: b.spawnDate, inoculation_date: b.inoculationDate, colonization_date: b.colonizationDate,
       fruiting_date: b.fruitingDate, expected_harvest_date: b.expectedHarvestDate, status: b.status, cost: b.cost, notes: b.notes ?? null, created_at: b.spawnDate,
+      location_code: b.locationCode ?? null,
+    }))],
+    ['batch_events', data.batchEvents.map((e) => ({
+      id: e.id, batch_id: e.batchId, type: e.type, message: e.message, meta: JSON.stringify(e.meta), created_at: e.createdAt,
     }))],
     ['harvests', data.harvests.map((h) => ({
       id: h.id, batch_id: h.batchId, room_id: h.roomId, harvested_at: h.date, wet_weight: h.wetWeight, waste_weight: h.wasteWeight, grade: h.grade, employee_id: h.employeeId, created_at: h.date,

@@ -27,14 +27,33 @@ async function write(farmId: string, q: PromiseLike<{ error: { message: string; 
 const upsertRow = (table: string, id: string | undefined, row: Record<string, unknown>) =>
   id ? supabase().from(table).update(row).eq('id', id) : supabase().from(table).insert(row)
 
+async function logBatchEvent(
+  farmId: string,
+  batchId: string,
+  type: 'CREATED' | 'STATUS_CHANGED' | 'LOCATION_CHANGED' | 'HARVESTED' | 'NOTE_ADDED',
+  message: string,
+  meta: Record<string, unknown> = {},
+) {
+  const { error } = await supabase().from('batch_events').insert({
+    farm_id: farmId,
+    batch_id: batchId,
+    type,
+    message,
+    meta,
+    created_by: (await supabase().auth.getUser()).data.user?.id ?? null,
+  })
+  fail(error)
+}
+
 export const supabaseCommandService: CommandService = {
   async createBatch(farmId, i) {
     const { batches } = await getRecords(farmId)
-    await write(
-      farmId,
-      supabase().from('production_batches').insert({
+    const code = nextBatchCode(batches, new Date().getFullYear())
+    const { data, error } = await supabase()
+      .from('production_batches')
+      .insert({
         farm_id: farmId,
-        code: nextBatchCode(batches, new Date().getFullYear()),
+        code,
         species_id: i.speciesId,
         room_id: i.roomId,
         substrate: i.substrate,
@@ -45,10 +64,19 @@ export const supabaseCommandService: CommandService = {
         expected_harvest_date: i.expectedHarvestDate,
         cost: i.cost,
         notes: i.notes ?? null,
+        location_code: i.locationCode?.trim().toUpperCase() || null,
         status: 'PLANNED',
         created_by: (await supabase().auth.getUser()).data.user?.id ?? null,
-      }),
-    )
+      })
+      .select('id')
+      .single()
+    fail(error)
+    if (!data) throw new ServiceError('not_found')
+    await logBatchEvent(farmId, data.id, 'CREATED', `Lote ${code} creado`, {
+      locationCode: i.locationCode?.trim().toUpperCase() || null,
+      bags: i.bags,
+    })
+    await done(farmId)
   },
   async setBatchStatus(farmId, batchId, status) {
     const batch = (await getRecords(farmId)).batches.find((b) => b.id === batchId)
@@ -62,12 +90,42 @@ export const supabaseCommandService: CommandService = {
         .update({ status, inoculation_date: dates.inoculationDate, colonization_date: dates.colonizationDate, fruiting_date: dates.fruitingDate })
         .eq('id', batchId),
     )
+    await logBatchEvent(farmId, batchId, 'STATUS_CHANGED', `Estado → ${status}`, { from: batch.status, to: status })
+    await done(farmId)
+  },
+  async setBatchLocation(farmId, batchId, locationCode) {
+    const batch = (await getRecords(farmId)).batches.find((b) => b.id === batchId)
+    if (!batch) throw new ServiceError('not_found')
+    const code = locationCode?.trim().toUpperCase() || null
+    await write(farmId, supabase().from('production_batches').update({ location_code: code }).eq('id', batchId))
+    await logBatchEvent(farmId, batchId, 'LOCATION_CHANGED', code ? `Ubicación → ${code}` : 'Ubicación liberada', {
+      from: batch.locationCode,
+      to: code,
+    })
+    await done(farmId)
+  },
+  async listBatchEvents(farmId, batchId) {
+    const { toBatchEvent } = await import('./rows')
+    const { data, error } = await supabase()
+      .from('batch_events')
+      .select('*')
+      .eq('farm_id', farmId)
+      .eq('batch_id', batchId)
+      .order('created_at', { ascending: false })
+    fail(error)
+    return (data ?? []).map(toBatchEvent)
   },
   async recordHarvest(farmId, i) {
     await write(
       farmId,
       supabase().rpc('record_harvest', { p_batch: i.batchId, p_wet: i.wetWeight, p_waste: i.wasteWeight, p_grade: i.grade, p_employee: i.employeeId, p_harvested_at: i.date ?? new Date().toISOString() }),
     )
+    await logBatchEvent(farmId, i.batchId, 'HARVESTED', `Cosecha: ${i.wetWeight} lb (grado ${i.grade})`, {
+      wetWeight: i.wetWeight,
+      wasteWeight: i.wasteWeight,
+      grade: i.grade,
+    })
+    await done(farmId)
   },
   async recordMovement(farmId, i) {
     if (!i.quantity) throw new ServiceError('invalid')

@@ -9,6 +9,7 @@
  */
 import type {
   AuditEntry,
+  BatchEvent,
   BatchStatus,
   Customer,
   Employee,
@@ -43,6 +44,7 @@ export interface FarmDataset {
   employees: Employee[]
   batches: ProductionBatch[]
   harvests: Harvest[]
+  batchEvents: BatchEvent[]
   products: InventoryProduct[]
   movements: InventoryMovement[]
   customers: Customer[]
@@ -79,7 +81,7 @@ export function generateFarm({ farm, seed, scale }: Options): FarmDataset {
   const isPast = (d: Date) => d.getTime() <= now.getTime()
 
   // ---------- Reference data ----------
-  const species: MushroomSpecies[] = SPECIES.map(({ key: _key, costPerLb: _cost, ...s }, i) => ({ ...s, id: rnd.uuid(), colorIndex: i }))
+  const species: MushroomSpecies[] = SPECIES.map(({ key, costPerLb: _cost, ...s }, i) => ({ ...s, id: rnd.uuid(), colorIndex: i, imageKey: key }))
   const speciesByKey = Object.fromEntries(SPECIES.map((s, i) => [s.key, species[i]])) as Record<SpeciesKey, MushroomSpecies>
   const costPerLb = Object.fromEntries(SPECIES.map((s) => [s.key, s.costPerLb])) as Record<SpeciesKey, number>
 
@@ -213,6 +215,7 @@ export function generateFarm({ farm, seed, scale }: Options): FarmDataset {
         farmId: farm.id,
         speciesId: sp.id,
         roomId: status === 'PLANNED' || status === 'INOCULATED' || status === 'COLONIZING' ? roomByKey.incubation.id : roomByKey[roomKey].id,
+        locationCode: status === 'PLANNED' ? null : `${String.fromCharCode(65 + (batchSeq % 3))}-${1 + (batchSeq % 4)}${String.fromCharCode(65 + (batchSeq % 6))}`,
         substrate: s.key === 'reishi' || s.key === 'shiitake' ? 'Supplemented hardwood' : s.key === 'oyster' ? 'Straw & hardwood pellets' : 'Hardwood + soy hull (Master’s Mix)',
         substrateWeight,
         spawnWeight,
@@ -237,6 +240,23 @@ export function generateFarm({ farm, seed, scale }: Options): FarmDataset {
     overdue.expectedHarvestDate = iso(at(-3, 9))
     overdue.status = 'READY_TO_HARVEST'
   }
+
+  // ---------- Batch traceability events ----------
+  const batchEvents: BatchEvent[] = []
+  const pushEvent = (b: ProductionBatch, type: BatchEvent['type'], message: string, date: string, meta: Record<string, unknown> = {}) =>
+    batchEvents.push({ id: rnd.uuid(), farmId: farm.id, batchId: b.id, type, message, meta, createdBy: b.createdBy, createdAt: date })
+  for (const b of batches) {
+    pushEvent(b, 'CREATED', `Lote ${b.code} creado`, b.spawnDate, { bags: b.bags })
+    if (b.locationCode) pushEvent(b, 'LOCATION_CHANGED', `Ubicación → ${b.locationCode}`, b.spawnDate, { to: b.locationCode })
+    if (b.inoculationDate) pushEvent(b, 'STATUS_CHANGED', 'Estado → INOCULATED', b.inoculationDate, { to: 'INOCULATED' })
+    if (b.colonizationDate) pushEvent(b, 'STATUS_CHANGED', 'Estado → COLONIZING', b.colonizationDate, { to: 'COLONIZING' })
+    if (b.fruitingDate) pushEvent(b, 'STATUS_CHANGED', 'Estado → FRUITING', b.fruitingDate, { to: 'FRUITING' })
+  }
+  for (const h of harvests) {
+    const b = batches.find((x) => x.id === h.batchId)
+    if (b) pushEvent(b, 'HARVESTED', `Cosecha: ${h.wetWeight} lb (grado ${h.grade})`, h.date, { wetWeight: h.wetWeight, grade: h.grade })
+  }
+  batchEvents.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
   // ---------- Inventory simulation ----------
   const movements: InventoryMovement[] = []
@@ -605,6 +625,7 @@ export function generateFarm({ farm, seed, scale }: Options): FarmDataset {
     employees,
     batches,
     harvests: harvests.sort((a, b) => a.date.localeCompare(b.date)),
+    batchEvents,
     products,
     movements: movements.sort((a, b) => a.date.localeCompare(b.date)),
     customers,

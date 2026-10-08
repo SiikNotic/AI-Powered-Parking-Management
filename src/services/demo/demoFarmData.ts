@@ -76,15 +76,23 @@ function shipOrder(farmId: string, order: Order) {
   }
 }
 
+/** Appends a traceability event to a batch's history (demo, in-memory). */
+function logBatchEvent(farmId: string, batchId: string, type: import('@/types').BatchEventType, message: string, meta: Record<string, unknown> = {}) {
+  const d = getFarmDataset(farmId)
+  d.batchEvents.unshift({ id: id(), farmId, batchId, type, message, meta, createdBy: demoUser.id, createdAt: now() })
+}
+
 export const demoCommandService: CommandService = {
   async createBatch(farmId, input) {
     const d = getFarmDataset(farmId)
     const code = nextBatchCode(d.batches, new Date().getFullYear())
+    const batchId = id()
     d.batches.push({
-      id: id(),
+      id: batchId,
       code,
       farmId,
       ...input,
+      locationCode: input.locationCode?.trim().toUpperCase() || null,
       inoculationDate: null,
       colonizationDate: null,
       fruitingDate: null,
@@ -92,6 +100,7 @@ export const demoCommandService: CommandService = {
       createdBy: demoUser.id,
       notes: input.notes,
     })
+    logBatchEvent(farmId, batchId, 'CREATED', `Lote ${code} creado`, { bags: input.bags, locationCode: input.locationCode?.trim().toUpperCase() || null })
     return done(farmId, { action: 'created', entity: 'batch', entityLabel: `#${code}` })
   },
   async setBatchStatus(farmId, batchId, status) {
@@ -99,7 +108,21 @@ export const demoCommandService: CommandService = {
     assertBatchTransition(b, status)
     const old = b.status
     Object.assign(b, { status, ...batchDates(status, now()) })
+    logBatchEvent(farmId, batchId, 'STATUS_CHANGED', `Estado → ${status}`, { from: old, to: status })
     return done(farmId, { action: 'updated', entity: 'batch', entityLabel: `#${b.code}`, oldValue: old, newValue: status })
+  },
+  async setBatchLocation(farmId, batchId, locationCode) {
+    const d = getFarmDataset(farmId)
+    const b = find(d.batches, batchId)
+    const code = locationCode?.trim().toUpperCase() || null
+    const from = b.locationCode
+    b.locationCode = code
+    logBatchEvent(farmId, batchId, 'LOCATION_CHANGED', code ? `Ubicación → ${code}` : 'Ubicación liberada', { from, to: code })
+    return done(farmId, { action: 'updated', entity: 'batch', entityLabel: `#${b.code}`, oldValue: from ?? '', newValue: code ?? '' })
+  },
+  async listBatchEvents(farmId, batchId) {
+    const events = getFarmDataset(farmId).batchEvents.filter((e) => e.batchId === batchId)
+    return delay([...events], 120)
   },
   async recordHarvest(farmId, input) {
     const d = getFarmDataset(farmId)
@@ -123,6 +146,7 @@ export const demoCommandService: CommandService = {
       date,
     })
     if (b.status === 'FRUITING' || b.status === 'READY_TO_HARVEST') b.status = 'HARVESTED'
+    logBatchEvent(farmId, b.id, 'HARVESTED', `Cosecha: ${input.wetWeight} lb (grado ${input.grade})`, { wetWeight: input.wetWeight, grade: input.grade })
     return done(farmId, { action: 'recorded', entity: 'harvest', entityLabel: `#${b.code}`, newValue: `${input.wetWeight} lb` })
   },
   async recordMovement(farmId, input) {

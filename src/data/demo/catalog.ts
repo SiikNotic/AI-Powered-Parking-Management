@@ -5,11 +5,11 @@
 import type { CustomerType, EquipmentRecordSeed, ExpenseSeed, ProductSeed, RoomSeed, SpeciesSeed, StaffSeed } from './seedTypes'
 
 export const SPECIES: SpeciesSeed[] = [
-  { key: 'oyster', name: 'Blue Oyster', scientificName: 'Pleurotus ostreatus', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 55, max: 65 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 900 }, averageYield: 0.78, averageGrowDays: 21, shelfLifeDays: 7, costPerLb: 3.4 },
-  { key: 'lions_mane', name: 'Lion’s Mane', scientificName: 'Hericium erinaceus', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 60, max: 70 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 1000 }, averageYield: 0.58, averageGrowDays: 28, shelfLifeDays: 7, costPerLb: 4.6 },
-  { key: 'shiitake', name: 'Shiitake', scientificName: 'Lentinula edodes', incubationTemp: { min: 70, max: 77 }, fruitingTemp: { min: 55, max: 70 }, humidity: { min: 80, max: 90 }, co2: { min: 400, max: 1500 }, averageYield: 0.52, averageGrowDays: 56, shelfLifeDays: 10, costPerLb: 5.1 },
-  { key: 'king_oyster', name: 'King Oyster', scientificName: 'Pleurotus eryngii', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 55, max: 65 }, humidity: { min: 85, max: 90 }, co2: { min: 400, max: 1500 }, averageYield: 0.62, averageGrowDays: 35, shelfLifeDays: 10, costPerLb: 4.2 },
-  { key: 'reishi', name: 'Reishi', scientificName: 'Ganoderma lingzhi', incubationTemp: { min: 75, max: 82 }, fruitingTemp: { min: 75, max: 85 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 2000 }, averageYield: 0.18, averageGrowDays: 60, shelfLifeDays: 365, costPerLb: 14 },
+  { key: 'oyster', imageKey: 'oyster', name: 'Blue Oyster', scientificName: 'Pleurotus ostreatus', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 55, max: 65 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 900 }, averageYield: 0.78, averageGrowDays: 21, shelfLifeDays: 7, costPerLb: 3.4 },
+  { key: 'lions_mane', imageKey: 'lions_mane', name: 'Lion’s Mane', scientificName: 'Hericium erinaceus', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 60, max: 70 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 1000 }, averageYield: 0.58, averageGrowDays: 28, shelfLifeDays: 7, costPerLb: 4.6 },
+  { key: 'shiitake', imageKey: 'shiitake', name: 'Shiitake', scientificName: 'Lentinula edodes', incubationTemp: { min: 70, max: 77 }, fruitingTemp: { min: 55, max: 70 }, humidity: { min: 80, max: 90 }, co2: { min: 400, max: 1500 }, averageYield: 0.52, averageGrowDays: 56, shelfLifeDays: 10, costPerLb: 5.1 },
+  { key: 'king_oyster', imageKey: 'king_oyster', name: 'King Oyster', scientificName: 'Pleurotus eryngii', incubationTemp: { min: 70, max: 75 }, fruitingTemp: { min: 55, max: 65 }, humidity: { min: 85, max: 90 }, co2: { min: 400, max: 1500 }, averageYield: 0.62, averageGrowDays: 35, shelfLifeDays: 10, costPerLb: 4.2 },
+  { key: 'reishi', imageKey: 'reishi', name: 'Reishi', scientificName: 'Ganoderma lingzhi', incubationTemp: { min: 75, max: 82 }, fruitingTemp: { min: 75, max: 85 }, humidity: { min: 85, max: 95 }, co2: { min: 400, max: 2000 }, averageYield: 0.18, averageGrowDays: 60, shelfLifeDays: 365, costPerLb: 14 },
 ]
 
 export const ROOMS: RoomSeed[] = [
