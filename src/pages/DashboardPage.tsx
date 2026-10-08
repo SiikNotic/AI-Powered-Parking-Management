@@ -11,6 +11,7 @@ import { HarvestCard } from '@/components/dashboard/HarvestCard'
 import { InventoryCard } from '@/components/dashboard/InventoryCard'
 import { KpiGrid } from '@/components/dashboard/KpiGrid'
 import { PipelineCard } from '@/components/dashboard/PipelineCard'
+import { QuickActions } from '@/components/dashboard/QuickActions'
 import { SalesCard } from '@/components/dashboard/SalesCard'
 import { TasksCard } from '@/components/dashboard/TasksCard'
 import { Button } from '@/components/ui/Button'
@@ -157,6 +158,7 @@ export function DashboardPage() {
         <ErrorState onRetry={snapshot.retry} className="panel rounded-card" />
       ) : (
         <div className={cn('space-y-4 transition-opacity', snapshot.status === 'loading' && data && 'opacity-70')} aria-busy={snapshot.status === 'loading'}>
+          <QuickActions />
           <KpiGrid snapshot={data} />
           {!data ? (
             <div className="grid gap-4 xl:grid-cols-12">

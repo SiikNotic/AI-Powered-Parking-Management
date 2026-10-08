@@ -1,4 +1,4 @@
-import { AlertTriangle, Layers, Plus, Scissors } from 'lucide-react'
+import { AlertTriangle, Layers, MapPin, Plus, Scissors } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { speciesColor } from '@/components/dashboard/format'
@@ -6,6 +6,7 @@ import { BATCH_WRITERS, HARVEST_WRITERS } from '@/components/modules/batches/acc
 import { BatchDrawer } from '@/components/modules/batches/BatchDrawer'
 import { BatchForm } from '@/components/modules/batches/BatchForm'
 import { BatchStatusBadge } from '@/components/modules/batches/BatchStatusBadge'
+import { ScanButton } from '@/components/modules/batches/QrScanner'
 import { HarvestForm } from '@/components/modules/harvest/HarvestForm'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -22,7 +23,8 @@ import { useCommand } from '@/hooks/useCommand'
 import { useFarmData } from '@/hooks/useFarmData'
 import { useFormat } from '@/hooks/useFormat'
 import { useI18n } from '@/i18n'
-import type { BatchStatus, ProductionBatch } from '@/types'
+import { commands } from '@/services'
+import type { BatchEvent, BatchStatus, ProductionBatch } from '@/types'
 
 const STATUSES: BatchStatus[] = ['PLANNED', 'INOCULATED', 'COLONIZING', 'FRUITING', 'READY_TO_HARVEST', 'HARVESTED', 'COMPLETED', 'FAILED', 'DISCARDED']
 
@@ -39,7 +41,7 @@ interface Row {
 export function BatchesPage() {
   const { t } = useI18n()
   const fmt = useFormat()
-  const { user } = useSession()
+  const { user, farm } = useSession()
   const { data, status, retry } = useFarmData()
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
@@ -49,8 +51,10 @@ export function BatchesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [harvestFor, setHarvestFor] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<{ batch: ProductionBatch; status: BatchStatus } | null>(null)
+  const [events, setEvents] = useState<BatchEvent[]>([])
   const [now] = useState(() => new Date())
   const setStatus = useCommand('setBatchStatus')
+  const setLocation = useCommand('setBatchLocation')
   const canWrite = BATCH_WRITERS.includes(user.role)
   const canHarvest = HARVEST_WRITERS.includes(user.role)
   // /batches?new=1 (from the Production page) opens the form directly.
@@ -64,6 +68,33 @@ export function BatchesPage() {
       return p
     }, { replace: true })
   }, [params, setParams])
+
+  // Deep link from a scanned QR: /batches?code=B-00042 opens that batch.
+  useEffect(() => {
+    const code = params.get('code')
+    if (!code || !data) return
+    const match = data.batches.find((b) => b.code.toLowerCase() === code.toLowerCase())
+    if (match) setSelectedId(match.id)
+    setParams((p) => {
+      p.delete('code')
+      return p
+    }, { replace: true })
+  }, [params, data, setParams])
+
+  // Load the traceability history whenever a batch is opened.
+  useEffect(() => {
+    if (!selectedId) {
+      setEvents([])
+      return
+    }
+    let cancelled = false
+    commands.listBatchEvents(farm.id, selectedId).then((list) => {
+      if (!cancelled) setEvents(list)
+    }).catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [selectedId, farm.id])
 
   const rows = useMemo<Row[]>(() => {
     if (!data) return []
@@ -110,6 +141,16 @@ export function BatchesPage() {
     setConfirm(null)
   }
 
+  const changeLocation = async (batch: ProductionBatch, locationCode: string | null) => {
+    await setLocation.run([batch.id, locationCode], t('pages.batches.drawer.locationChanged', { code: locationCode ?? '—' }))
+  }
+
+  const openScannedBatch = (code: string) => {
+    const match = data?.batches.find((b) => b.code.toLowerCase() === code.toLowerCase())
+    if (match) setSelectedId(match.id)
+    else setQuery(code)
+  }
+
   const columns: Column<Row>[] = [
     { key: 'code', header: t('pages.batches.columns.code'), cell: (r) => <span className="font-mono text-xs font-semibold text-text">#{r.batch.code}</span>, sort: (r) => r.batch.code },
     {
@@ -124,6 +165,21 @@ export function BatchesPage() {
       sort: (r) => r.speciesName,
     },
     { key: 'room', header: t('pages.batches.columns.room'), cell: (r) => r.roomName, sort: (r) => r.roomName, hideOnMobile: true },
+    {
+      key: 'location',
+      header: t('pages.batches.columns.location'),
+      cell: (r) =>
+        r.batch.locationCode ? (
+          <span className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-text">
+            <MapPin aria-hidden className="size-3.5 text-text-muted" />
+            {r.batch.locationCode}
+          </span>
+        ) : (
+          <span className="text-xs text-text-muted">—</span>
+        ),
+      sort: (r) => r.batch.locationCode ?? '',
+      hideOnMobile: true,
+    },
     {
       key: 'status',
       header: t('pages.batches.columns.status'),
@@ -163,11 +219,16 @@ export function BatchesPage() {
         title={t('pages.batches.title')}
         description={t('pages.batches.subtitle')}
         actions={
-          canWrite && data ? (
-            <Button variant="primary" onClick={() => setCreating(true)}>
-              <Plus aria-hidden className="size-4" />
-              {t('pages.batches.new')}
-            </Button>
+          data ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <ScanButton onScan={openScannedBatch} />
+              {canWrite && (
+                <Button variant="primary" onClick={() => setCreating(true)}>
+                  <Plus aria-hidden className="size-4" />
+                  {t('pages.batches.new')}
+                </Button>
+              )}
+            </div>
           ) : undefined
         }
       />
@@ -218,13 +279,15 @@ export function BatchesPage() {
           species={data.species.find((s) => s.id === selected.speciesId)}
           room={data.rooms.find((r) => r.id === selected.roomId)}
           harvests={data.harvests.filter((h) => h.batchId === selected.id)}
+          events={events}
           employees={data.employees}
           canWrite={canWrite}
           canHarvest={canHarvest}
-          pending={setStatus.pending}
+          pending={setStatus.pending || setLocation.pending}
           onClose={() => setSelectedId(null)}
           onHarvest={() => setHarvestFor(selected.id)}
           onStatus={(next) => (next === 'FAILED' || next === 'DISCARDED' ? setConfirm({ batch: selected, status: next }) : void changeStatus(selected, next))}
+          onLocation={(code) => void changeLocation(selected, code)}
         />
       )}
       {harvestFor && data && <HarvestForm data={data} batchId={harvestFor} onClose={() => setHarvestFor(null)} />}
