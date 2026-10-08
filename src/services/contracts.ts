@@ -191,6 +191,8 @@ export interface BatchInput {
   expectedHarvestDate: string
   cost: number
   notes?: string
+  /** Precise in-room location, e.g. 'A-1A'. */
+  locationCode?: string | null
 }
 
 export interface HarvestInput {
@@ -244,6 +246,10 @@ export interface RoomInput {
 export interface CommandService {
   createBatch(farmId: ID, input: BatchInput): Promise<void>
   setBatchStatus(farmId: ID, batchId: ID, status: BatchStatus): Promise<void>
+  /** Updates the batch's in-room location (e.g. 'A-1A') and logs a LOCATION_CHANGED event. */
+  setBatchLocation(farmId: ID, batchId: ID, locationCode: string | null): Promise<void>
+  /** Append-only traceability events for a batch, newest first. */
+  listBatchEvents(farmId: ID, batchId: ID): Promise<import('@/types').BatchEvent[]>
   /** Records a harvest and moves its net weight into stock. Append-only. */
   recordHarvest(farmId: ID, input: HarvestInput): Promise<void>
   recordMovement(farmId: ID, input: MovementInput): Promise<void>

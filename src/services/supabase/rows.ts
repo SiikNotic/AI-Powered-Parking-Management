@@ -20,6 +20,7 @@ import type {
   MushroomSpecies,
   Order,
   ProductionBatch,
+  BatchEvent,
 } from '@/types'
 
 const num = (v: number | string | null | undefined) => (v === null || v === undefined ? 0 : Number(v))
@@ -43,6 +44,7 @@ export interface SpeciesRow {
   average_grow_days: number
   shelf_life_days: number
   color_index: number
+  image_key: string | null
 }
 export const toSpecies = (r: SpeciesRow): MushroomSpecies => ({
   id: r.id,
@@ -56,6 +58,7 @@ export const toSpecies = (r: SpeciesRow): MushroomSpecies => ({
   averageGrowDays: r.average_grow_days,
   shelfLifeDays: r.shelf_life_days,
   colorIndex: r.color_index,
+  imageKey: r.image_key ?? null,
 })
 
 export interface RoomRow {
@@ -116,6 +119,7 @@ export interface BatchRow {
   cost: number | string
   notes: string | null
   created_by: string | null
+  location_code: string | null
 }
 const iso = (v: string) => new Date(v).toISOString()
 const isoOrNull = (v: string | null) => (v ? iso(v) : null)
@@ -138,6 +142,28 @@ export const toBatch = (r: BatchRow): ProductionBatch => ({
   createdBy: r.created_by ?? '',
   cost: num(r.cost),
   notes: r.notes ?? undefined,
+  locationCode: r.location_code ?? null,
+})
+
+export interface BatchEventRow {
+  id: string
+  farm_id: string
+  batch_id: string
+  type: BatchEvent['type']
+  message: string
+  meta: Record<string, unknown> | null
+  created_by: string | null
+  created_at: string
+}
+export const toBatchEvent = (r: BatchEventRow): BatchEvent => ({
+  id: r.id,
+  farmId: r.farm_id,
+  batchId: r.batch_id,
+  type: r.type,
+  message: r.message,
+  meta: r.meta ?? {},
+  createdBy: r.created_by,
+  createdAt: iso(r.created_at),
 })
 
 export interface HarvestRow { id: string; batch_id: string; room_id: string; harvested_at: string; wet_weight: number | string; waste_weight: number | string; grade: Harvest['grade']; employee_id: string | null }

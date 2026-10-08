@@ -67,6 +67,8 @@ export interface MushroomSpecies {
   shelfLifeDays: number
   /** Chart colour slot (stable per species). */
   colorIndex: number
+  /** Photo key: public/images/species/<imageKey>.jpg (null = placeholder). */
+  imageKey: string | null
 }
 
 export type RoomType = 'grow' | 'incubation' | 'fruiting' | 'cold_storage' | 'packing' | 'processing'
@@ -125,6 +127,27 @@ export interface ProductionBatch {
   /** Production cost attributed to the batch (substrate, spawn, labour share). */
   cost: number
   notes?: string
+  /** Precise in-room location, e.g. 'A-1A' (room A, rack 1, position A). */
+  locationCode: string | null
+}
+
+/** Append-only traceability event for a batch. */
+export type BatchEventType =
+  | 'CREATED'
+  | 'STATUS_CHANGED'
+  | 'LOCATION_CHANGED'
+  | 'HARVESTED'
+  | 'NOTE_ADDED'
+
+export interface BatchEvent {
+  id: ID
+  farmId: ID
+  batchId: ID
+  type: BatchEventType
+  message: string
+  meta: Record<string, unknown>
+  createdBy: ID | null
+  createdAt: ISODate
 }
 
 export type HarvestGrade = 'A' | 'B' | 'C'
